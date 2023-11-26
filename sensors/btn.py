@@ -26,4 +26,5 @@ def run_btn_loop(btn: BTN, stop_event):
     while True:
         if stop_event.is_set():
             btn.stop()
+            break
         time.sleep(1)

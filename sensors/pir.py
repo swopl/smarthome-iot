@@ -25,4 +25,5 @@ def run_pir_loop(pir: PIR, stop_event):
     while True:
         if stop_event.is_set():
             pir.stop()
+            break
         time.sleep(1)
