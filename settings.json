@@ -1,6 +1,27 @@
 {
-    "DHT1": {
+    "RDHT1": {
         "simulated": true,
+        "codename": "RDHT1",
         "pin": 17
-    } 
+    },
+    "RDHT2": {
+        "simulated": true,
+        "codename": "RDHT2",
+        "pin": 27
+    },
+    "RPIR1": {
+        "simulated": true,
+        "codename": "RPIR1",
+        "pin": 5
+    },
+    "RPIR2": {
+        "simulated": true,
+        "codename": "RPIR1",
+        "pin": 6
+    },
+    "DPIR1": {
+        "simulated": true,
+        "codename": "RPIR1",
+        "pin": 22
+    }
 }
