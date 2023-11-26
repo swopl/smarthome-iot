@@ -3,6 +3,7 @@ import time
 import curses
 
 from components.btn import run_btn
+from components.mbr import run_mbr
 from settings import load_settings
 from components.dht import run_dht
 from components.pir import run_pir
@@ -44,6 +45,9 @@ def main2():
 
         ds1_settings = settings['DS1']
         run_btn(ds1_settings, threads, stop_event)
+
+        dms_settings = settings['DMS']
+        run_mbr(dms_settings, threads, stop_event)
 
         while True:
             time.sleep(1)

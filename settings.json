@@ -28,5 +28,11 @@
         "simulated": true,
         "codename": "DS1",
         "pin": 23
+    },
+    "DMS": {
+        "simulated": true,
+        "codename": "DMS",
+        "r": [25, 8, 7, 1],
+        "c": [12, 16, 20, 21]
     }
 }
