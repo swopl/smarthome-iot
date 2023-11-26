@@ -4,6 +4,7 @@ import curses
 
 from components.btn import run_btn
 from components.mbr import run_mbr
+from components.uds import run_uds
 from settings import load_settings
 from components.dht import run_dht
 from components.pir import run_pir
@@ -48,6 +49,9 @@ def main2():
 
         dms_settings = settings['DMS']
         run_mbr(dms_settings, threads, stop_event)
+
+        dus1_settings = settings['DUS1']
+        run_uds(dus1_settings, threads, stop_event)
 
         while True:
             time.sleep(1)
