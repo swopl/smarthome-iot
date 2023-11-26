@@ -8,8 +8,8 @@ class DHT(object):
 	DHTLIB_ERROR_TIMEOUT = -2
 	DHTLIB_INVALID_VALUE = -999
 	
-	DHTLIB_DHT11_WAKEUP = 0.020#0.018		#18ms
-	DHTLIB_TIMEOUT = 0.0001			#100us
+	DHTLIB_DHT11_WAKEUP = 0.020  # 0.018		#18ms
+	DHTLIB_TIMEOUT = 0.0001			# 100us
 	
 	humidity = 0
 	temperature = 0
@@ -17,7 +17,7 @@ class DHT(object):
 	def __init__(self,pin):
 		self.pin = pin
 		self.bits = [0,0,0,0,0]
-	#Read DHT sensor, store the original data in bits[]	
+	# Read DHT sensor, store the original data in bits[]
 	def readSensor(self,pin,wakeupDelay):
 		mask = 0x80
 		idx = 0

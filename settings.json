@@ -16,12 +16,12 @@
     },
     "RPIR2": {
         "simulated": true,
-        "codename": "RPIR1",
+        "codename": "RPIR2",
         "pin": 6
     },
     "DPIR1": {
         "simulated": true,
-        "codename": "RPIR1",
+        "codename": "DPIR1",
         "pin": 22
     }
 }
