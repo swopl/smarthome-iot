@@ -1,9 +1,11 @@
 import threading
+import time
+import curses
+
+from components.btn import run_btn
 from settings import load_settings
 from components.dht import run_dht
 from components.pir import run_pir
-import time
-import curses
 
 try:
     import RPi.GPIO as GPIO
@@ -39,6 +41,9 @@ def main2():
         run_pir(rpir2_settings, threads, stop_event)
         dpir1_settings = settings['DPIR1']
         run_pir(dpir1_settings, threads, stop_event)
+
+        ds1_settings = settings['DS1']
+        run_btn(ds1_settings, threads, stop_event)
 
         while True:
             time.sleep(1)

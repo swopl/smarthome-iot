@@ -23,5 +23,10 @@
         "simulated": true,
         "codename": "DPIR1",
         "pin": 22
+    },
+    "DS1": {
+        "simulated": true,
+        "codename": "DS1",
+        "pin": 23
     }
 }
