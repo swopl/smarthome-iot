@@ -56,6 +56,11 @@ def main2():
         print('Stopping app')
         for t in threads:
             stop_event.set()
+        try:
+            import RPi.GPIO as GPIO
+            GPIO.cleanup()
+        except:
+            pass
 
 
 if __name__ == "__main__":
