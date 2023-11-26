@@ -26,12 +26,41 @@ def main(stdscr):
     key = stdscr.getkey()
 
 
+def check_pin_collision(settings):
+    used_pins = []
+    if not settings['RDHT1']['simulated']:
+        used_pins.append(settings['RDHT1']['pin'])
+    if not settings['RDHT2']['simulated']:
+        used_pins.append(settings['RDHT2']['pin'])
+
+    if not settings['RPIR1']['simulated']:
+        used_pins.append(settings['RPIR1']['pin'])
+    if not settings['RPIR2']['simulated']:
+        used_pins.append(settings['RPIR2']['pin'])
+    if not settings['DPIR1']['simulated']:
+        used_pins.append(settings['DPIR1']['pin'])
+
+    if not settings['DS1']['simulated']:
+        used_pins.append(settings['DS1']['pin'])
+
+    if not settings['DMS']['simulated']:
+        used_pins.extend(settings['DMS']['r'])
+        used_pins.extend(settings['DMS']['c'])
+
+    if not settings['DUS1']['simulated']:
+        used_pins.append(settings['DUS1']['trig_pin'])
+        used_pins.append(settings['DUS1']['echo_pin'])
+    if len(used_pins) != len(set(used_pins)):
+        raise Exception("There is a collision within the pins!")
+
+
 def main2():
     print('Starting app')
     settings = load_settings()
     threads = []
     stop_event = threading.Event()
     try:
+        check_pin_collision(settings)
         rdht1_settings = settings['RDHT1']
         run_dht(rdht1_settings, threads, stop_event)
         rdht2_settings = settings['RDHT2']
