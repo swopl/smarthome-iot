@@ -1,6 +1,7 @@
 import threading
 import time
 import curses
+import logging
 
 from components.btn import run_btn
 from components.mbr import run_mbr
@@ -55,7 +56,10 @@ def check_pin_collision(settings):
 
 
 def main2():
-    print('Starting app')
+    t = time.localtime()
+    timestamp = time.strftime("%Y-%m-%d-%H%M%S", t)
+    logging.basicConfig(filename=f"iot-{timestamp}.log", level=logging.DEBUG)
+    logging.debug('Starting app')
     settings = load_settings()
     threads = []
     stop_event = threading.Event()
@@ -86,7 +90,7 @@ def main2():
             time.sleep(1)
 
     except KeyboardInterrupt:
-        print('Stopping app')
+        logging.debug('Stopping app')
         for t in threads:
             stop_event.set()
         try:

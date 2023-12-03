@@ -1,6 +1,7 @@
 from simulators.pir import run_pir_simulator
 import threading
 import time
+import logging
 
 
 def pir_callback(code, message):
@@ -13,17 +14,17 @@ def pir_callback(code, message):
 
 def run_pir(settings, threads, stop_event):
     if settings['simulated']:
-        print(f"Starting {settings['codename']} simulator")
+        logging.debug(f"Starting {settings['codename']} simulator")
         pir_thread = threading.Thread(target=run_pir_simulator,
                                       args=(pir_callback, stop_event, settings['codename']))
         pir_thread.start()
         threads.append(pir_thread)
-        print(f"{settings['codename']} simulator started")
+        logging.debug(f"{settings['codename']} simulator started")
     else:
         from sensors.pir import run_pir_loop, PIR
-        print(f"Starting {settings['codename']} loop")
+        logging.debug(f"Starting {settings['codename']} loop")
         pir = PIR(settings['pin'], settings['codename'], pir_callback)
         pir_thread = threading.Thread(target=run_pir_loop, args=(pir, stop_event))
         pir_thread.start()
         threads.append(pir_thread)
-        print(f"{settings['codename']} loop started")
+        logging.debug(f"{settings['codename']} loop started")
