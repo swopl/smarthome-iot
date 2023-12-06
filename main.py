@@ -1,6 +1,5 @@
 import threading
 import time
-import curses
 import logging
 
 from components.btn import run_btn
@@ -9,22 +8,14 @@ from components.uds import run_uds
 from settings import load_settings
 from components.dht import run_dht
 from components.pir import run_pir
+from curseui import CurseUI
 
 try:
     import RPi.GPIO as GPIO
+
     GPIO.setmode(GPIO.BCM)
 except:
     pass
-
-
-def main(stdscr):
-    stdscr.clear()
-    # This raises ZeroDivisionError when i == 10.
-    for i in range(0, 9):
-        v = i-10
-        stdscr.addstr(i, 0, '10 divided by {} is {}'.format(v, 10/v))
-    stdscr.refresh()
-    key = stdscr.getkey()
 
 
 def check_pin_collision(settings):
@@ -55,10 +46,23 @@ def check_pin_collision(settings):
         raise Exception("There is a collision within the pins!")
 
 
-def main2():
+def init_log():
     t = time.localtime()
     timestamp = time.strftime("%Y-%m-%d-%H%M%S", t)
     logging.basicConfig(filename=f"iot-{timestamp}.log", level=logging.DEBUG)
+
+
+def main2():
+    device_values = {
+        "DHT": [],
+        "MBR": [],
+        "PIR": [],
+        "UDS": [],
+        "BTN": []
+    }
+    CurseUI().draw_loop()
+    return
+    init_log()
     logging.debug('Starting app')
     settings = load_settings()
     threads = []
@@ -78,7 +82,7 @@ def main2():
         run_pir(dpir1_settings, threads, stop_event)
 
         ds1_settings = settings['DS1']
-        run_btn(ds1_settings, threads, stop_event)
+        run_btn(ds1_settings, threads, stop_event, stdscr)
 
         dms_settings = settings['DMS']
         run_mbr(dms_settings, threads, stop_event)
@@ -87,6 +91,8 @@ def main2():
         run_uds(dus1_settings, threads, stop_event)
 
         while True:
+            key = stdscr.getkey()
+            print("YOU PRESSED:", key)
             time.sleep(1)
 
     except KeyboardInterrupt:
@@ -102,4 +108,4 @@ def main2():
 
 if __name__ == "__main__":
     main2()
-    # curses.wrapper(main)
+    # curses.wrapper(main2)

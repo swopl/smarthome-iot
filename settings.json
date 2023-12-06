@@ -2,42 +2,58 @@
     "RDHT1": {
         "simulated": true,
         "codename": "RDHT1",
+        "type": "DHT",
+        "row": 1,
         "pin": 17
     },
     "RDHT2": {
         "simulated": true,
         "codename": "RDHT2",
+        "type": "DHT",
+        "row": 2,
         "pin": 27
     },
     "RPIR1": {
         "simulated": true,
         "codename": "RPIR1",
+        "type": "PIR",
+        "row": 3,
         "pin": 5
     },
     "RPIR2": {
         "simulated": true,
         "codename": "RPIR2",
+        "type": "PIR",
+        "row": 4,
         "pin": 6
     },
     "DPIR1": {
         "simulated": true,
         "codename": "DPIR1",
+        "type": "PIR",
+        "row": 5,
         "pin": 22
     },
     "DS1": {
         "simulated": true,
         "codename": "DS1",
+        "type": "BTN",
+        "row": 6,
         "pin": 26
     },
     "DMS": {
         "simulated": true,
         "codename": "DMS",
+        "type": "MBR",
+        "row": 7,
         "r": [25, 8, 7, 1],
         "c": [12, 16, 20, 21]
     },
     "DUS1": {
         "simulated": true,
         "codename": "DUS1",
+        "type": "UDS",
+        "row": 8,
         "trig_pin": 23,
         "echo_pin": 24
     }
