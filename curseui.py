@@ -1,4 +1,5 @@
 import curses
+import time
 
 
 # assuming 128x24 screen
@@ -17,4 +18,6 @@ class CurseUI:
         key = stdscr.getkey()
 
     def draw_loop(self):
-        curses.wrapper(self._draw_loop)
+        # curses.wrapper(self._draw_loop)
+        while True:
+            time.sleep(1)

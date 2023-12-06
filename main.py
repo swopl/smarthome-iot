@@ -52,49 +52,35 @@ def init_log():
     logging.basicConfig(filename=f"iot-{timestamp}.log", level=logging.DEBUG)
 
 
-def main2():
+def main():
     device_values = {
-        "DHT": [],
+        "DHT": ([]),
         "MBR": [],
         "PIR": [],
         "UDS": [],
         "BTN": []
     }
-    CurseUI().draw_loop()
-    return
+    ui = CurseUI()
     init_log()
     logging.debug('Starting app')
     settings = load_settings()
+    check_pin_collision(settings)
     threads = []
     stop_event = threading.Event()
+    for key in settings:
+        if settings[key]["type"] == "DHT":
+            run_dht(settings[key], threads, stop_event)
+        elif settings[key]["type"] == "PIR":
+            run_pir(settings[key], threads, stop_event)
+        elif settings[key]["type"] == "BTN":
+            run_btn(settings[key], threads, stop_event)
+        elif settings[key]["type"] == "MBR":
+            run_mbr(settings[key], threads, stop_event)
+        elif settings[key]["type"] == "UDS":
+            run_uds(settings[key], threads, stop_event)
+
     try:
-        check_pin_collision(settings)
-        rdht1_settings = settings['RDHT1']
-        run_dht(rdht1_settings, threads, stop_event)
-        rdht2_settings = settings['RDHT2']
-        run_dht(rdht2_settings, threads, stop_event)
-
-        rpir1_settings = settings['RPIR1']
-        run_pir(rpir1_settings, threads, stop_event)
-        rpir2_settings = settings['RPIR2']
-        run_pir(rpir2_settings, threads, stop_event)
-        dpir1_settings = settings['DPIR1']
-        run_pir(dpir1_settings, threads, stop_event)
-
-        ds1_settings = settings['DS1']
-        run_btn(ds1_settings, threads, stop_event, stdscr)
-
-        dms_settings = settings['DMS']
-        run_mbr(dms_settings, threads, stop_event)
-
-        dus1_settings = settings['DUS1']
-        run_uds(dus1_settings, threads, stop_event)
-
-        while True:
-            key = stdscr.getkey()
-            print("YOU PRESSED:", key)
-            time.sleep(1)
-
+        ui.draw_loop()
     except KeyboardInterrupt:
         logging.debug('Stopping app')
         for t in threads:
@@ -107,5 +93,5 @@ def main2():
 
 
 if __name__ == "__main__":
-    main2()
+    main()
     # curses.wrapper(main2)
