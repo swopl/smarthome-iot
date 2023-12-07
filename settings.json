@@ -63,5 +63,12 @@
         "type": "LED",
         "row": 9,
         "pin": 19
+    },
+    "DB": {
+        "simulated": true,
+        "codename": "DB",
+        "type": "ABZ",
+        "row": 10,
+        "pin": 13
     }
 }

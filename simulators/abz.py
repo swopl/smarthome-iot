@@ -1,7 +1,8 @@
 from queue import Empty
+import time
 
 
-class LEDSimulated:
+class ABZSimulated:
     def __init__(self, code, stop_event, command_queue, callback):
         self.code = code
         self.stop_event = stop_event
@@ -23,8 +24,7 @@ class LEDSimulated:
                 command = self.command_queue.get(timeout=1)
             except Empty:
                 continue
-            if command:
-                onoff = True
-            else:
-                onoff = False
-            self.callback(onoff, self.code)
+            pitch, duration = command["pitch"], command["duration"]
+            self.callback({"pitch": pitch, "duration": duration}, self.code)
+            time.sleep(duration)
+            self.callback(False, self.code)

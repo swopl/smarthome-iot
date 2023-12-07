@@ -1,4 +1,5 @@
 import curses
+import logging
 import time
 from queue import LifoQueue, Empty
 
@@ -7,8 +8,10 @@ from queue import LifoQueue, Empty
 # TODO: resizing support: use KEY_RESIZE
 class CurseUI:
     # TODO: move out of this class somewhere better
-    key_to_cmd = {"J": ("DL", False), "O": ("DL", True)}
-    key_to_descr = {"J": "Turn Door Light off", "O": "Turn Door Light on"}
+    key_to_cmd = {"J": ("DL", False),
+                  "O": ("DL", True),
+                  "B": ("DB", {"pitch": 440, "duration": 0.1})}
+    key_to_descr = {"J": "Turn Door Light off", "O": "Turn Door Light on", "B": "Buzz the buzzer"}
 
     def __init__(self, device_values_to_display: dict[str, LifoQueue], row_templates: dict,
                  command_queues: dict[str, LifoQueue]):

@@ -2,6 +2,7 @@ import threading
 import time
 import logging
 
+from components.abz import ABZComponent
 from components.btn import BTNComponent
 from components.dht import DHTComponent
 from components.led import LEDComponent
@@ -95,10 +96,17 @@ def main():
         elif settings[key]["type"] == "LED":
             command_queues[key] = LifoQueue()
             row_templates[key] = (int(settings[key]["row"]),
-                                  "{code:10} at {timestamp} | Light is {onoff} ")
-            led = LEDComponent(device_values_to_display[key], settings[key],
+                                  "{code:10} at {timestamp} | Light is {onoff}")
+            abz = LEDComponent(device_values_to_display[key], settings[key],
                                stop_event, command_queues[key])
-            led.run(threads)
+            abz.run(threads)
+        elif settings[key]["type"] == "ABZ":
+            command_queues[key] = LifoQueue()
+            row_templates[key] = (int(settings[key]["row"]),
+                                  "{code:10} at {timestamp} | Buzzer {buzz}")
+            abz = ABZComponent(device_values_to_display[key], settings[key],
+                               stop_event, command_queues[key])
+            abz.run(threads)
         logging.info(f"Success loading component: {key}")
 
     logging.debug(f"RowT: {row_templates}")
