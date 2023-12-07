@@ -20,6 +20,7 @@ mqtt_client.loop_start()
 
 
 def on_connect(client, userdata, flags, rc):
+    print("Connecting to mqtt broker...")
     client.subscribe("Temperature")
     client.subscribe("Humidity")
     client.subscribe("Motion")
