@@ -12,7 +12,7 @@ class CurseUI:
     # TODO: move out of this class somewhere better
     key_to_cmd = {"J": ("DL", False),
                   "O": ("DL", True),
-                  "B": ("DB", {"pitch": 440, "duration": 0.1})}
+                  "B": ("DB", {"pitch": 440, "duration": 0.3})}
     key_to_descr = {"J": "Turn Door Light off",
                     "O": "Turn Door Light on",
                     "B": "Buzz the buzzer"}
@@ -66,12 +66,11 @@ class CurseUI:
                     stdscr.addstr(row, 0, self.drawn_rows[key])
                 continue
             else:
-                old_row = self.drawn_rows.get(key)
                 t = values["timestamp"]
-                values["timestamp"] = t.strftime('%H:%M:%S.%f')[:-3]
-                self.drawn_rows[key] = template.format(**values)
-                if old_row != self.drawn_rows[key] and self.latest_times[key] < t:
+                if self.latest_times[key] < t:
                     # new data
+                    values["timestamp"] = t.strftime('%H:%M:%S.%f')[:-3]
+                    self.drawn_rows[key] = template.format(**values)
                     self.latest_times[key] = t
                     stdscr.addstr(row, 0, self.drawn_rows[key], curses.A_BOLD)
                 else:
