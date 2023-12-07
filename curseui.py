@@ -20,6 +20,8 @@ class CurseUI:
 
     def _draw_once(self, stdscr):
         stdscr.clear()
+        # TODO: assuming here
+        stdscr.addstr(0, 0, f"{'Running on pi: PI1':128}", curses.A_REVERSE)
         for key in self.device_values:
             row, template = self.row_templates[key]
             queue = self.device_values[key]
