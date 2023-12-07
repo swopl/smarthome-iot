@@ -61,12 +61,13 @@ def main():
     row_templates = {}
     init_log()
     logging.debug('Starting app')
-    settings = load_settings()
+    settings = load_settings()["PI1"]
     check_pin_collision(settings)
     threads = []
     stop_event = threading.Event()
     for key in settings:
         device_values_to_display[key] = LifoQueue()
+        settings[key]["runs_on"] = "PI1"
         if settings[key]["type"] == "DHT":
             row_templates[key] = (int(settings[key]["row"]),
                                   "{code:10} at {timestamp} | Humidity: "
