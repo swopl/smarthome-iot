@@ -6,7 +6,7 @@ from broker_settings import HOSTNAME, PORT
 
 
 class Component:
-    def __init__(self, display_queue, settings, stop_event, publish_data_limit=15):
+    def __init__(self, display_queue, settings, stop_event, publish_data_limit=8):
         self.display_queue = display_queue
         self.settings = settings
         self.stop_event = stop_event
