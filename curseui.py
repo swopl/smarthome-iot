@@ -78,4 +78,8 @@ class CurseUI:
         stdscr.refresh()
 
     def draw_loop(self):
-        curses.wrapper(self._draw_loop)
+        try:
+            curses.wrapper(self._draw_loop)
+        except curses.error:
+            print("Curses failed! Is your terminal big enough? Exiting...")
+            raise KeyboardInterrupt
