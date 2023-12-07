@@ -4,6 +4,7 @@ import logging
 
 from components.btn import BTNComponent
 from components.dht import DHTComponent
+from components.led import LEDComponent
 from components.mbr import MBRComponent
 from components.uds import UDSComponent
 from settings import load_settings
@@ -55,6 +56,7 @@ def init_log():
 
 def main():
     device_values_to_display = {}
+    command_queues = {}
     row_templates = {}
     init_log()
     logging.debug('Starting app')
@@ -90,10 +92,17 @@ def main():
                                   "{code:10} at {timestamp} | Distance: {distance:> 7.5}")
             uds = UDSComponent(device_values_to_display[key], settings[key], stop_event)
             uds.run(threads)
+        elif settings[key]["type"] == "LED":
+            command_queues[key] = LifoQueue()
+            row_templates[key] = (int(settings[key]["row"]),
+                                  "{code:10} at {timestamp} | Light is {onoff} ")
+            led = LEDComponent(device_values_to_display[key], settings[key],
+                               stop_event, command_queues[key])
+            led.run(threads)
         logging.info(f"Success loading component: {key}")
 
     logging.debug(f"RowT: {row_templates}")
-    ui = CurseUI(device_values_to_display, row_templates)
+    ui = CurseUI(device_values_to_display, row_templates, command_queues)
     try:
         ui.draw_loop()
     except KeyboardInterrupt:

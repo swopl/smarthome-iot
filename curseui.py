@@ -7,10 +7,16 @@ from queue import LifoQueue, Empty
 # assuming 128x24 screen
 # TODO: resizing support: use KEY_RESIZE
 class CurseUI:
-    def __init__(self, device_values_to_display: dict[str, LifoQueue], row_templates: dict):
+    # TODO: move out of this class somewhere better
+    key_to_cmd = {"J": ("DL", False), "O": ("DL", True)}
+    key_to_descr = {"J": "Turn Door Light off", "O": "Turn Door Light on"}
+
+    def __init__(self, device_values_to_display: dict[str, LifoQueue], row_templates: dict,
+                 command_queues: dict[str, LifoQueue]):
         self.device_values = device_values_to_display
         self.row_templates = row_templates
         self.drawn_rows = {}
+        self.command_queues = command_queues
 
     def _draw_loop(self, stdscr):
         curses.curs_set(0)
@@ -26,6 +32,10 @@ class CurseUI:
             keypress = stdscr.getkey()
         except curses.error:
             keypress = None
+        if keypress and keypress.upper() in self.key_to_cmd:
+            component, command = self.key_to_cmd[keypress.upper()]
+            self.command_queues[component].put(command)
+            time.sleep(0.08)  # just in case to match ui faster FIXME: might not need it
         stdscr.clear()
         # TODO: assuming here
         stdscr.addstr(0, 0, f"{'Running on pi: PI1':128}", curses.A_REVERSE)
