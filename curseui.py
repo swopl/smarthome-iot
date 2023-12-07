@@ -14,12 +14,18 @@ class CurseUI:
 
     def _draw_loop(self, stdscr):
         curses.curs_set(0)
+        # will make getkey block for 600ms. FIXME: this might very rarely cause dropped inputs
+        stdscr.timeout(600)
         while True:
             # TODO: clear queue eventually
             self._draw_once(stdscr)
-            time.sleep(1)
+            # time.sleep(1)
 
     def _draw_once(self, stdscr):
+        try:
+            keypress = stdscr.getkey()
+        except curses.error:
+            keypress = None
         stdscr.clear()
         # TODO: assuming here
         stdscr.addstr(0, 0, f"{'Running on pi: PI1':128}", curses.A_REVERSE)
