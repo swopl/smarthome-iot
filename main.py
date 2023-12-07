@@ -2,14 +2,14 @@ import threading
 import time
 import logging
 
-from components.btn import run_btn
-from components.mbr import run_mbr
-from components.uds import run_uds
+from components.btn import BTNComponent
+from components.dht import DHTComponent
+from components.mbr import MBRComponent
+from components.uds import UDSComponent
 from settings import load_settings
-from components.dht import run_dht
-from components.pir import run_pir
+from components.pir import PIRComponent
 from curseui import CurseUI
-from queue import LifoQueue, Queue
+from queue import LifoQueue
 
 try:
     import RPi.GPIO as GPIO
@@ -68,23 +68,28 @@ def main():
             row_templates[key] = (int(settings[key]["row"]),
                                   "{code:10} at {timestamp} | Humidity: "
                                   "{humidity:> 6.4} and Temperature: {temperature:> 7.5}")
-            run_dht(settings[key], threads, stop_event, device_values_to_display[key])
+            dht = DHTComponent(device_values_to_display[key], settings[key], stop_event)
+            dht.run(threads)
         elif settings[key]["type"] == "PIR":
             row_templates[key] = (int(settings[key]["row"]),
                                   "{code:10} at {timestamp} | Motion detected")
-            run_pir(settings[key], threads, stop_event, device_values_to_display[key])
+            pir = PIRComponent(device_values_to_display[key], settings[key], stop_event)
+            pir.run(threads)
         elif settings[key]["type"] == "BTN":
             row_templates[key] = (int(settings[key]["row"]),
                                   "{code:10} at {timestamp} | Button pressed")
-            run_btn(settings[key], threads, stop_event, device_values_to_display[key])
+            btn = BTNComponent(device_values_to_display[key], settings[key], stop_event)
+            btn.run(threads)
         elif settings[key]["type"] == "MBR":
             row_templates[key] = (int(settings[key]["row"]),
                                   "{code:10} at {timestamp} | Keys: {keys}")
-            run_mbr(settings[key], threads, stop_event, device_values_to_display[key])
+            mbr = MBRComponent(device_values_to_display[key], settings[key], stop_event)
+            mbr.run(threads)
         elif settings[key]["type"] == "UDS":
             row_templates[key] = (int(settings[key]["row"]),
                                   "{code:10} at {timestamp} | Distance: {distance:> 7.5}")
-            run_uds(settings[key], threads, stop_event, device_values_to_display[key])
+            uds = UDSComponent(device_values_to_display[key], settings[key], stop_event)
+            uds.run(threads)
         logging.info(f"Success loading component: {key}")
 
     logging.debug(f"RowT: {row_templates}")
