@@ -32,8 +32,9 @@ class DHTComponent(Component):
         }
 
         with self.counter_lock:
-            self.publish_batch.append(('Temperature', json.dumps(temp_payload), 0, True))
-            self.publish_batch.append(('Humidity', json.dumps(humidity_payload), 0, True))
+            # FIXME: check if ok not to retain, it only keeps 1 anyway
+            self.publish_batch.append(('Temperature', json.dumps(temp_payload), 0, False))
+            self.publish_batch.append(('Humidity', json.dumps(humidity_payload), 0, False))
             self.publish_data_counter += 1
 
         if self.publish_data_counter >= self.publish_data_limit:
