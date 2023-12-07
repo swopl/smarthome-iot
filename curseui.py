@@ -1,6 +1,5 @@
 import curses
 import time
-import logging
 from queue import LifoQueue, Empty
 
 
@@ -24,8 +23,14 @@ class CurseUI:
         stdscr.timeout(600)
         while True:
             # TODO: clear queue eventually
-            self._draw_once(stdscr)
-            # time.sleep(1)
+            self._draw_once(stdscr)  # this should contain some sleeps inside, or blocking
+
+    def _draw_help(self, stdscr):
+        rows, _ = stdscr.getmaxyx()
+        line = rows-1
+        for keypress, help_text in self.key_to_descr.items():
+            stdscr.addstr(line, 0, f"{keypress}: {help_text}", curses.A_ITALIC)
+            line -= 1
 
     def _draw_once(self, stdscr):
         try:
@@ -39,6 +44,7 @@ class CurseUI:
         stdscr.clear()
         # TODO: assuming here
         stdscr.addstr(0, 0, f"{'Running on pi: PI1':128}", curses.A_REVERSE)
+        self._draw_help(stdscr)
         for key in self.device_values:
             row, template = self.row_templates[key]
             queue = self.device_values[key]
@@ -64,5 +70,3 @@ class CurseUI:
 
     def draw_loop(self):
         curses.wrapper(self._draw_loop)
-        # while True:
-        #     time.sleep(1)
