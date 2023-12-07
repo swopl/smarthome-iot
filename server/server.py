@@ -3,15 +3,15 @@ from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
 import paho.mqtt.client as mqtt
 import json
+from secret import TOKEN
 
 app = Flask(__name__)
 
 # InfluxDB Configuration
-token = "CHANGE_ME"
 org = "FTN"
 url = "http://localhost:8086"
 bucket = "example_db"
-influxdb_client = InfluxDBClient(url=url, token=token, org=org)
+influxdb_client = InfluxDBClient(url=url, token=TOKEN, org=org)
 
 # MQTT Configuration
 mqtt_client = mqtt.Client()
@@ -33,6 +33,7 @@ mqtt_client.on_message = lambda client, userdata, msg: save_to_db(json.loads(msg
 
 
 def save_to_db(data):
+    print(f"Received: {data}")
     write_api = influxdb_client.write_api(write_options=SYNCHRONOUS)
     point = (
         Point(data["measurement"])
