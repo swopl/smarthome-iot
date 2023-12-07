@@ -19,7 +19,7 @@ class DHTComponent(Component):
             "measurement": "Temperature",
             "simulated": self.settings['simulated'],
             "runs_on": self.settings["runs_on"],
-            "name": self.settings["codename"],
+            "codename": self.settings["codename"],
             "value": temperature
         }
 
@@ -27,7 +27,7 @@ class DHTComponent(Component):
             "measurement": "Humidity",
             "simulated": self.settings['simulated'],
             "runs_on": self.settings["runs_on"],
-            "name": self.settings["codename"],
+            "codename": self.settings["codename"],
             "value": humidity
         }
 
