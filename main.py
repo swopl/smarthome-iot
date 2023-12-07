@@ -50,7 +50,7 @@ def check_pin_collision(settings):
 
 
 def init_log():
-    t = datetime.now().time()
+    t = datetime.now()
     timestamp = t.strftime("%Y-%m-%d-%H%M%S")
     logging.basicConfig(filename=f"iot-{timestamp}.log", level=logging.DEBUG)
 
