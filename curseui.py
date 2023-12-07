@@ -13,6 +13,7 @@ class CurseUI:
         self.drawn_rows = {}
 
     def _draw_loop(self, stdscr):
+        curses.curs_set(0)
         while True:
             # TODO: clear queue eventually
             self._draw_once(stdscr)
