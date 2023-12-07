@@ -1,18 +1,24 @@
 from simulators.btn import run_btn_simulator
+from queue import LifoQueue
 import threading
 import time
 import logging
 
+display_queue: LifoQueue
+
 
 def btn_callback(code, message):
     t = time.localtime()
-    print("= " * 20)
-    print(f"Timestamp: {time.strftime('%H:%M:%S', t)}")
-    print(f"Code: {code}")
-    print(f"Message: {message}")
+    # print("= " * 20)
+    # print(f"Timestamp: {time.strftime('%H:%M:%S', t)}")
+    # print(f"Code: {code}")
+    # print(f"Message: {message}")
+    display_queue.put({"timestamp": t, "code": code})
 
 
-def run_btn(settings, threads, stop_event):
+def run_btn(settings, threads, stop_event, component_display_queue):
+    global display_queue
+    display_queue = component_display_queue
     if settings['simulated']:
         logging.debug(f"Starting {settings['codename']} simulator")
         pir_thread = threading.Thread(target=run_btn_simulator,

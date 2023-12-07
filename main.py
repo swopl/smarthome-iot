@@ -9,6 +9,7 @@ from settings import load_settings
 from components.dht import run_dht
 from components.pir import run_pir
 from curseui import CurseUI
+from queue import LifoQueue, Queue
 
 try:
     import RPi.GPIO as GPIO
@@ -53,14 +54,8 @@ def init_log():
 
 
 def main():
-    device_values = {
-        "DHT": ([]),
-        "MBR": [],
-        "PIR": [],
-        "UDS": [],
-        "BTN": []
-    }
-    ui = CurseUI()
+    device_values_to_display = {}
+    row_templates = {}
     init_log()
     logging.debug('Starting app')
     settings = load_settings()
@@ -68,20 +63,36 @@ def main():
     threads = []
     stop_event = threading.Event()
     for key in settings:
+        device_values_to_display[key] = LifoQueue()
         if settings[key]["type"] == "DHT":
-            run_dht(settings[key], threads, stop_event)
+            row_templates[key] = (int(settings[key]["row"]),
+                                  "{code:10} at {timestamp} | Humidity: "
+                                  "{humidity:> 6.4} and Temperature: {temperature:> 7.5}")
+            run_dht(settings[key], threads, stop_event, device_values_to_display[key])
         elif settings[key]["type"] == "PIR":
-            run_pir(settings[key], threads, stop_event)
+            row_templates[key] = (int(settings[key]["row"]),
+                                  "{code:10} at {timestamp} | Motion detected")
+            run_pir(settings[key], threads, stop_event, device_values_to_display[key])
         elif settings[key]["type"] == "BTN":
-            run_btn(settings[key], threads, stop_event)
+            row_templates[key] = (int(settings[key]["row"]),
+                                  "{code:10} at {timestamp} | Button pressed")
+            run_btn(settings[key], threads, stop_event, device_values_to_display[key])
         elif settings[key]["type"] == "MBR":
-            run_mbr(settings[key], threads, stop_event)
+            row_templates[key] = (int(settings[key]["row"]),
+                                  "{code:10} at {timestamp} | Keys: {keys}")
+            run_mbr(settings[key], threads, stop_event, device_values_to_display[key])
         elif settings[key]["type"] == "UDS":
-            run_uds(settings[key], threads, stop_event)
+            row_templates[key] = (int(settings[key]["row"]),
+                                  "{code:10} at {timestamp} | Distance: {distance:> 7.5}")
+            run_uds(settings[key], threads, stop_event, device_values_to_display[key])
+        logging.info(f"Success loading component: {key}")
 
+    logging.debug(f"RowT: {row_templates}")
+    ui = CurseUI(device_values_to_display, row_templates)
     try:
         ui.draw_loop()
     except KeyboardInterrupt:
+        print("Stopping app")
         logging.debug('Stopping app')
         for t in threads:
             stop_event.set()

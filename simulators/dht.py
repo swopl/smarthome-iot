@@ -2,16 +2,16 @@ import time
 import random
 
 
-def generate_values(initial_temp=25, initial_humidity=20):
+def generate_values(initial_temp=25.0, initial_humidity=20.0):
     temperature = initial_temp
     humidity = initial_humidity
     while True:
-        temperature = temperature + random.randint(-1, 1)
-        humidity = humidity + random.randint(-1, 1)
-        if humidity < 0:
-            humidity = 0
-        if humidity > 100:
-            humidity = 100
+        temperature = temperature + 1.0 * random.randint(-1, 1)
+        humidity = humidity + 1.0 * random.randint(-1, 1)
+        if humidity < 0.0:
+            humidity = 0.0
+        if humidity > 100.0:
+            humidity = 100.0
         yield humidity, temperature
 
 
