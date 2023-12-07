@@ -10,7 +10,7 @@ services:
       - "9001:9001" #default mqtt port for websockets
     volumes:
       - ./broker-config:/mosquitto/config:rw
-      - ./broker-data:/mosquitto/data:rw
+        #      - ./broker-data:/mosquitto/data:rw
       - ./broker-log:/mosquitto/log:rw
     networks:
       - iot-network
