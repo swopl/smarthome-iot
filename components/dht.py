@@ -1,7 +1,7 @@
 from components.component import Component
 from simulators.dht import run_dht_simulator
 import threading
-import time
+from datetime import datetime
 
 
 class DHTComponent(Component):
@@ -12,7 +12,7 @@ class DHTComponent(Component):
         return dht_thread
 
     def _callback(self, humidity, temperature, code):
-        t = time.localtime()
+        t = datetime.now()
         self.display_queue.put({"timestamp": t, "code": code, "temperature": temperature, "humidity": humidity})
 
     def _run_real(self):

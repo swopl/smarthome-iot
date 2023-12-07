@@ -1,7 +1,7 @@
 from components.component import Component
 from simulators.mbr import run_mbr_simulator
 import threading
-import time
+from datetime import datetime
 
 
 class MBRComponent(Component):
@@ -12,7 +12,7 @@ class MBRComponent(Component):
         return mbr_thread
 
     def _callback(self, code, message):
-        t = time.localtime()
+        t = datetime.now()
         self.display_queue.put({"timestamp": t, "code": code, "keys": message})
 
     def _run_real(self):

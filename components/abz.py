@@ -1,7 +1,7 @@
 from components.component import Component
 from simulators.abz import ABZSimulated
 import threading
-import time
+from datetime import datetime
 
 
 class ABZComponent(Component):
@@ -10,7 +10,7 @@ class ABZComponent(Component):
         self.command_queue = command_queue
 
     def _callback(self, buzz, code):
-        t = time.localtime()
+        t = datetime.now()
         if not buzz:
             self.display_queue.put({"timestamp": t, "code": code, "buzz": "not buzzing"})
         else:

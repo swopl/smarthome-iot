@@ -1,7 +1,7 @@
 from components.component import Component
 from simulators.pir import run_pir_simulator
 import threading
-import time
+from datetime import datetime
 
 
 class PIRComponent(Component):
@@ -12,7 +12,7 @@ class PIRComponent(Component):
         return pir_thread
 
     def _callback(self, code, message):
-        t = time.localtime()
+        t = datetime.now()
         self.display_queue.put({"timestamp": t, "code": code})
 
     def _run_real(self):

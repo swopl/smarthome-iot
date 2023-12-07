@@ -1,7 +1,7 @@
 from components.component import Component
 from simulators.uds import run_uds_simulator
 import threading
-import time
+from datetime import datetime
 
 
 class UDSComponent(Component):
@@ -12,7 +12,7 @@ class UDSComponent(Component):
         return uds_thread
 
     def _callback(self, code, distance):
-        t = time.localtime()
+        t = datetime.now()
         self.display_queue.put({"timestamp": t, "code": code, "distance": distance})
 
     def _run_real(self):

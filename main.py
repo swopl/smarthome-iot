@@ -1,5 +1,4 @@
 import threading
-import time
 import logging
 
 from components.abz import ABZComponent
@@ -12,6 +11,7 @@ from settings import load_settings
 from components.pir import PIRComponent
 from curseui import CurseUI
 from queue import LifoQueue
+from datetime import datetime
 
 try:
     import RPi.GPIO as GPIO
@@ -50,8 +50,8 @@ def check_pin_collision(settings):
 
 
 def init_log():
-    t = time.localtime()
-    timestamp = time.strftime("%Y-%m-%d-%H%M%S", t)
+    t = datetime.now().time()
+    timestamp = t.strftime("%Y-%m-%d-%H%M%S")
     logging.basicConfig(filename=f"iot-{timestamp}.log", level=logging.DEBUG)
 
 

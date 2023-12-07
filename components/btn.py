@@ -1,7 +1,7 @@
 from components.component import Component
 from simulators.btn import run_btn_simulator
 import threading
-import time
+from datetime import datetime
 
 
 class BTNComponent(Component):
@@ -12,7 +12,7 @@ class BTNComponent(Component):
         return btn_thread
 
     def _callback(self, code, message):
-        t = time.localtime()
+        t = datetime.now()
         self.display_queue.put({"timestamp": t, "code": code})
 
     def _run_real(self):

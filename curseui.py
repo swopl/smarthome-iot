@@ -1,7 +1,9 @@
 import curses
 import logging
 import time
+from datetime import datetime
 from queue import LifoQueue, Empty
+from collections import defaultdict
 
 
 # assuming 128x24 screen
@@ -11,14 +13,18 @@ class CurseUI:
     key_to_cmd = {"J": ("DL", False),
                   "O": ("DL", True),
                   "B": ("DB", {"pitch": 440, "duration": 0.1})}
-    key_to_descr = {"J": "Turn Door Light off", "O": "Turn Door Light on", "B": "Buzz the buzzer"}
+    key_to_descr = {"J": "Turn Door Light off",
+                    "O": "Turn Door Light on",
+                    "B": "Buzz the buzzer"}
 
     def __init__(self, device_values_to_display: dict[str, LifoQueue], row_templates: dict,
                  command_queues: dict[str, LifoQueue]):
         self.device_values = device_values_to_display
         self.row_templates = row_templates
-        self.drawn_rows = {}
         self.command_queues = command_queues
+        self.drawn_rows = {}
+        # FIXME: check if this works same on all python versions
+        self.latest_times = defaultdict(lambda: datetime.min)
 
     def _draw_loop(self, stdscr):
         curses.curs_set(0)
@@ -61,11 +67,12 @@ class CurseUI:
                 continue
             else:
                 old_row = self.drawn_rows.get(key)
-                values["timestamp"] = time.strftime('%H:%M:%S', values["timestamp"])
+                t = values["timestamp"]
+                values["timestamp"] = t.strftime('%H:%M:%S.%f')[:-3]
                 self.drawn_rows[key] = template.format(**values)
-                stdscr.addstr(row, 0, self.drawn_rows[key])
-                if old_row != self.drawn_rows[key]:
+                if old_row != self.drawn_rows[key] and self.latest_times[key] < t:
                     # new data
+                    self.latest_times[key] = t
                     stdscr.addstr(row, 0, self.drawn_rows[key], curses.A_BOLD)
                 else:
                     stdscr.addstr(row, 0, self.drawn_rows[key])

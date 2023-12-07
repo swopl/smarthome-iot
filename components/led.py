@@ -1,7 +1,7 @@
 from components.component import Component
 from simulators.led import LEDSimulated
 import threading
-import time
+from datetime import datetime
 
 
 class LEDComponent(Component):
@@ -10,7 +10,7 @@ class LEDComponent(Component):
         self.command_queue = command_queue
 
     def _callback(self, onoff, code):
-        t = time.localtime()
+        t = datetime.now()
         self.display_queue.put({"timestamp": t, "code": code, "onoff": "on" if onoff else "off"})
 
     def _run_simulated(self):
