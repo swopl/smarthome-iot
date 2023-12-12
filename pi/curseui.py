@@ -9,11 +9,16 @@ from collections import defaultdict
 # assuming 128x24 screen
 # TODO: resizing support: use KEY_RESIZE
 class CurseUI:
+    def do_quit(self):
+        raise KeyboardInterrupt
+
     # TODO: move out of this class somewhere better
-    key_to_cmd = {"J": ("DL", False),
+    key_to_cmd = {"Q": (None, do_quit),
+                  "J": ("DL", False),
                   "O": ("DL", True),
                   "B": ("DB", {"pitch": 440, "duration": 0.3})}
-    key_to_descr = {"J": "Turn Door Light off",
+    key_to_descr = {"Q": "Quit",
+                    "J": "Turn Door Light off",
                     "O": "Turn Door Light on",
                     "B": "Buzz the buzzer"}
 
@@ -48,7 +53,10 @@ class CurseUI:
             keypress = None
         if keypress and keypress.upper() in self.key_to_cmd:
             component, command = self.key_to_cmd[keypress.upper()]
-            self.command_queues[component].put(command)
+            if not component:
+                command(self)
+            else:
+                self.command_queues[component].put(command)
             time.sleep(0.08)  # just in case to match ui faster FIXME: might not need it
         stdscr.clear()
         # TODO: assuming here
