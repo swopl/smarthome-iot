@@ -1,5 +1,4 @@
 import threading
-import json
 from components.component import Component
 from simulators.dht import run_dht_simulator
 from datetime import datetime
@@ -17,28 +16,14 @@ class DHTComponent(Component):
         self.display_queue.put({"timestamp": t, "code": code, "temperature": temperature, "humidity": humidity})
         temp_payload = {
             "measurement": "Temperature",
-            "simulated": self.settings['simulated'],
-            "runs_on": self.settings["runs_on"],
-            "codename": self.settings["codename"],
             "value": temperature
         }
-
         humidity_payload = {
             "measurement": "Humidity",
-            "simulated": self.settings['simulated'],
-            "runs_on": self.settings["runs_on"],
-            "codename": self.settings["codename"],
             "value": humidity
         }
-
-        with self.counter_lock:
-            # FIXME: check if ok not to retain, it only keeps 1 anyway
-            self.publish_batch.append(('Temperature', json.dumps(temp_payload), 0, False))
-            self.publish_batch.append(('Humidity', json.dumps(humidity_payload), 0, False))
-            self.publish_data_counter += 1
-
-        if self.publish_data_counter >= self.publish_data_limit:
-            self.publish_event.set()
+        self.add_to_publish_batch([temp_payload, humidity_payload],
+                                  ["Temperature", "Humidity"])
 
     def _run_real(self):
         from sensors.dht import run_dht_loop, DHT

@@ -1,7 +1,6 @@
 from components.component import Component
 from simulators.uds import run_uds_simulator
 import threading
-import json
 from datetime import datetime
 
 
@@ -17,17 +16,9 @@ class UDSComponent(Component):
         self.display_queue.put({"timestamp": t, "code": code, "distance": distance})
         uds_payload = {
             "measurement": "Distance",
-            "simulated": self.settings['simulated'],
-            "runs_on": self.settings["runs_on"],
-            "codename": self.settings["codename"],
             "value": distance
         }
-        with self.counter_lock:
-            # FIXME: check if ok not to retain, it only keeps 1 anyway
-            self.publish_batch.append(('Distance', json.dumps(uds_payload), 0, False))
-            self.publish_data_counter += 1
-        if self.publish_data_counter >= self.publish_data_limit:
-            self.publish_event.set()
+        self.add_to_publish_batch([uds_payload], ["Distance"])
 
     def _run_real(self):
         from sensors.uds import run_uds_loop, UDS

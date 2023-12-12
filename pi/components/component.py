@@ -1,5 +1,6 @@
 import logging
 import threading
+import json
 import paho.mqtt.publish as publish
 from abc import abstractmethod
 from broker_settings import HOSTNAME, PORT
@@ -15,6 +16,21 @@ class Component:
         self.publish_batch = []
         self.counter_lock = threading.Lock()
         self.publish_event = threading.Event()
+
+    # FIXME: check if ok not to retain, it only keeps 1 anyway
+    def add_to_publish_batch(self, payloads: list[dict], topics: list[str], qos=0, retain=False):
+        for payload in payloads:
+            payload.update({
+                "simulated": self.settings["simulated"],
+                "runs_on": self.settings["runs_on"],
+                "codename": self.settings["codename"],
+            })
+        mqtt_loads = [(topics[i], json.dumps(payloads[i]), qos, retain) for i in range(len(payloads))]
+        with self.counter_lock:
+            self.publish_batch.extend(mqtt_loads)
+            self.publish_data_counter += 1
+        if self.publish_data_counter >= self.publish_data_limit:
+            self.publish_event.set()
 
     def _publisher_task(self):
         while True:

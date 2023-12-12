@@ -1,7 +1,6 @@
 from components.component import Component
 from simulators.btn import run_btn_simulator
 import threading
-import json
 from datetime import datetime
 
 
@@ -17,17 +16,9 @@ class BTNComponent(Component):
         self.display_queue.put({"timestamp": t, "code": code})
         btn_payload = {
             "measurement": "Button",
-            "simulated": self.settings['simulated'],
-            "runs_on": self.settings["runs_on"],
-            "codename": self.settings["codename"],
             "value": True
         }
-        with self.counter_lock:
-            # FIXME: check if ok not to retain, it only keeps 1 anyway
-            self.publish_batch.append(('Button', json.dumps(btn_payload), 0, False))
-            self.publish_data_counter += 1
-        if self.publish_data_counter >= self.publish_data_limit:
-            self.publish_event.set()
+        self.add_to_publish_batch([btn_payload], ["Button"])
 
     def _run_real(self):
         from sensors.btn import run_btn_loop, BTN
