@@ -28,6 +28,6 @@ class DHTComponent(Component):
     def _run_real(self):
         from sensors.dht import run_dht_loop, DHT
         dht = DHT(self.settings['pin'])
-        dht_thread = threading.Thread(target=run_dht_loop, args=(dht, 2, dht_callback, self.stop_event))
+        dht_thread = threading.Thread(target=run_dht_loop, args=(dht, 2, self._callback, self.stop_event))
         dht_thread.start()
         return dht_thread
