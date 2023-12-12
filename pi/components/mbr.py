@@ -24,7 +24,7 @@ class MBRComponent(Component):
         }
         with self.counter_lock:
             # FIXME: check if ok not to retain, it only keeps 1 anyway
-            self.publish_batch.append(('Distance', json.dumps(mbr_payload), 0, False))
+            self.publish_batch.append(('Keypad', json.dumps(mbr_payload), 0, False))
             self.publish_data_counter += 1
         if self.publish_data_counter >= self.publish_data_limit:
             self.publish_event.set()
