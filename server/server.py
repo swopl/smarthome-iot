@@ -39,6 +39,7 @@ def save_to_db(data):
     # TODO: maybe get timestamp from the device and not from here??
     point = (
         Point(data["measurement"])
+        .time(data["time"])
         .tag("simulated", data["simulated"])
         .tag("runs_on", data["runs_on"])
         .tag("codename", data["codename"])

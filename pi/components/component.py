@@ -4,6 +4,7 @@ import json
 import paho.mqtt.publish as publish
 from abc import abstractmethod
 from broker_settings import HOSTNAME, PORT
+from datetime import datetime
 
 
 class Component:
@@ -21,6 +22,7 @@ class Component:
     def add_to_publish_batch(self, payloads: list[dict], topics: list[str], qos=0, retain=False):
         for payload in payloads:
             payload.update({
+                "time": datetime.utcnow().isoformat() + "Z",
                 "simulated": self.settings["simulated"],
                 "runs_on": self.settings["runs_on"],
                 "codename": self.settings["codename"],
