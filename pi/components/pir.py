@@ -18,7 +18,7 @@ class PIRComponent(Component):
             "measurement": "Motion",
             "value": True
         }
-        self.publisher.add_to_batch([pir_payload], ["Motion"])
+        self.publisher.add_to_batch([pir_payload], ["Motion"], self.settings)
 
     def _run_real(self):
         from sensors.pir import run_pir_loop, PIR

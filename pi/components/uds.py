@@ -18,7 +18,7 @@ class UDSComponent(Component):
             "measurement": "Distance",
             "value": distance
         }
-        self.publisher.add_to_batch([uds_payload], ["Distance"])
+        self.publisher.add_to_batch([uds_payload], ["Distance"], self.settings)
 
     def _run_real(self):
         from sensors.uds import run_uds_loop, UDS

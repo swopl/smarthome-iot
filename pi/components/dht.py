@@ -22,7 +22,8 @@ class DHTComponent(Component):
             "measurement": "Humidity",
             "value": humidity
         }
-        self.publisher.add_to_batch([temp_payload, humidity_payload], ["Temperature", "Humidity"])
+        self.publisher.add_to_batch([temp_payload, humidity_payload],
+                                    ["Temperature", "Humidity"], self.settings)
 
     def _run_real(self):
         from sensors.dht import run_dht_loop, DHT

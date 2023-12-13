@@ -6,7 +6,7 @@ from components.publisher.publisher import Publisher
 
 
 class Component:
-    def __init__(self, display_queue, settings, stop_event, publisher: Publisher):
+    def __init__(self, display_queue, settings, stop_event, publisher: Publisher = None):
         self.display_queue = display_queue
         self.settings = settings
         self.stop_event = stop_event

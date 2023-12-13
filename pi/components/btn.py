@@ -18,7 +18,7 @@ class BTNComponent(Component):
             "measurement": "Button",
             "value": True
         }
-        self.publisher.add_to_batch([btn_payload], ["Button"])
+        self.publisher.add_to_batch([btn_payload], ["Button"], self.settings)
 
     def _run_real(self):
         from sensors.btn import run_btn_loop, BTN
