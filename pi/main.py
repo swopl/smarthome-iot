@@ -6,6 +6,7 @@ from components.btn import BTNComponent
 from components.dht import DHTComponent
 from components.led import LEDComponent
 from components.mbr import MBRComponent
+from components.publisher.publisher_dict import PublisherDict
 from components.uds import UDSComponent
 from settings import load_settings
 from components.pir import PIRComponent
@@ -65,43 +66,46 @@ def main():
     check_pin_collision(settings)
     threads = []
     stop_event = threading.Event()
+    publishers = PublisherDict()
     for key in settings:
         device_values_to_display[key] = LifoQueue()
         settings[key]["runs_on"] = "PI1"
-        if settings[key]["type"] == "DHT":
+        device_type = settings[key]["type"]
+        publisher = publishers[device_type]
+        if device_type == "DHT":
             row_templates[key] = (int(settings[key]["row"]),
                                   "{code:10} at {timestamp} | Humidity: "
                                   "{humidity:> 6.4} and Temperature: {temperature:> 7.5}")
-            dht = DHTComponent(device_values_to_display[key], settings[key], stop_event)
+            dht = DHTComponent(device_values_to_display[key], settings[key], stop_event, publisher)
             dht.run(threads)
-        elif settings[key]["type"] == "PIR":
+        elif device_type == "PIR":
             row_templates[key] = (int(settings[key]["row"]),
                                   "{code:10} at {timestamp} | Motion detected")
-            pir = PIRComponent(device_values_to_display[key], settings[key], stop_event)
+            pir = PIRComponent(device_values_to_display[key], settings[key], stop_event, publisher)
             pir.run(threads)
-        elif settings[key]["type"] == "BTN":
+        elif device_type == "BTN":
             row_templates[key] = (int(settings[key]["row"]),
                                   "{code:10} at {timestamp} | Button pressed")
-            btn = BTNComponent(device_values_to_display[key], settings[key], stop_event)
+            btn = BTNComponent(device_values_to_display[key], settings[key], stop_event, publisher)
             btn.run(threads)
-        elif settings[key]["type"] == "MBR":
+        elif device_type == "MBR":
             row_templates[key] = (int(settings[key]["row"]),
                                   "{code:10} at {timestamp} | Keys: {keys}")
-            mbr = MBRComponent(device_values_to_display[key], settings[key], stop_event)
+            mbr = MBRComponent(device_values_to_display[key], settings[key], stop_event, publisher)
             mbr.run(threads)
-        elif settings[key]["type"] == "UDS":
+        elif device_type == "UDS":
             row_templates[key] = (int(settings[key]["row"]),
                                   "{code:10} at {timestamp} | Distance: {distance:> 7.5}")
-            uds = UDSComponent(device_values_to_display[key], settings[key], stop_event)
+            uds = UDSComponent(device_values_to_display[key], settings[key], stop_event, publisher)
             uds.run(threads)
-        elif settings[key]["type"] == "LED":
+        elif device_type == "LED":
             command_queues[key] = LifoQueue()
             row_templates[key] = (int(settings[key]["row"]),
                                   "{code:10} at {timestamp} | Light is {onoff}")
             abz = LEDComponent(device_values_to_display[key], settings[key],
                                stop_event, command_queues[key])
             abz.run(threads)
-        elif settings[key]["type"] == "ABZ":
+        elif device_type == "ABZ":
             command_queues[key] = LifoQueue()
             row_templates[key] = (int(settings[key]["row"]),
                                   "{code:10} at {timestamp} | Buzzer {buzz}")

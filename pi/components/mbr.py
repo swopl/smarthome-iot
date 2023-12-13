@@ -18,7 +18,7 @@ class MBRComponent(Component):
             "measurement": "Keypad",
             "value": message
         }
-        self.add_to_publish_batch([mbr_payload], ["Keypad"])
+        self.publisher.add_to_batch([mbr_payload], ["Keypad"])
 
     def _run_real(self):
         from sensors.mbr import run_mbr_loop, MBR
