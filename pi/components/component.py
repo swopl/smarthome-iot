@@ -26,6 +26,8 @@ class Component:
             thread = self._run_real()
             logging.debug(f"{self.settings['codename']} loop started")
         threads.append(thread)
+        if self.publisher:
+            self.publisher.start_thread()
 
     @abstractmethod
     def _run_real(self) -> threading.Thread:
