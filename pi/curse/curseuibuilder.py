@@ -77,6 +77,7 @@ class CurseUIBuilder:
         self.command_queues[key] = Queue()
         self.row_templates[key] = (int(component_settings["row"]),
                                    "{code:10} at {timestamp} | Light is {onoff}")
+        self.command_builder.add_led(key)
         return LEDComponent(self.display_queues[key], component_settings, self.stop_event,
                             self.command_queues[key])
 
@@ -86,6 +87,7 @@ class CurseUIBuilder:
         self.command_queues[key] = Queue()
         self.row_templates[key] = (int(component_settings["row"]),
                                    "{code:10} at {timestamp} | Buzzer {buzz}")
+        self.command_builder.add_abz(key)
         return ABZComponent(self.display_queues[key], component_settings, self.stop_event,
                             self.command_queues[key])
 
@@ -95,5 +97,6 @@ class CurseUIBuilder:
         self.command_queues[key] = Queue()
         self.row_templates[key] = (int(component_settings["row"]),
                                    "{code:10} at {timestamp} | RGB colors: {color}")
+        self.command_builder.add_rgb(key)
         return RGBComponent(self.display_queues[key], component_settings, self.stop_event,
                             self.command_queues[key])
