@@ -4,7 +4,6 @@ import logging
 
 from components.abz import ABZComponent
 from components.btn import BTNComponent
-from components.component import Component
 from components.dht import DHTComponent
 from components.led import LEDComponent
 from components.mbr import MBRComponent
@@ -13,7 +12,7 @@ from components.rgb import RGBComponent
 from components.uds import UDSComponent
 from settings import load_settings
 from components.pir import PIRComponent
-from curseui import CurseUI
+from curse.curseui import CurseUI
 from queue import LifoQueue, Queue
 from datetime import datetime
 
