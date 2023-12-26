@@ -22,6 +22,10 @@ def check_pin_collision(settings: dict):
         elif not component_setting["simulated"] and component_setting["type"] == "UDS":
             used_pins.append(component_setting['trig_pin'])
             used_pins.append(component_setting['echo_pin'])
+        elif not component_setting["simulated"] and component_setting["type"] == "RGB":
+            used_pins.append(component_setting['pin_r'])
+            used_pins.append(component_setting['pin_g'])
+            used_pins.append(component_setting['pin_b'])
         elif not component_setting["simulated"]:
             used_pins.append(component_setting['pin'])
 
@@ -82,4 +86,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    # curses.wrapper(main2)
