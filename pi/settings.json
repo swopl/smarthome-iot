@@ -139,6 +139,15 @@
             "type": "PIR",
             "row": 3,
             "pin": 6
+        },
+        "BRGB": {
+            "simulated": true,
+            "codename": "BRGB",
+            "type": "RGB",
+            "row": 4,
+            "pin_r": 12,
+            "pin_g": 13,
+            "pin_b": 19
         }
     }
 }

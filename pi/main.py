@@ -4,15 +4,17 @@ import logging
 
 from components.abz import ABZComponent
 from components.btn import BTNComponent
+from components.component import Component
 from components.dht import DHTComponent
 from components.led import LEDComponent
 from components.mbr import MBRComponent
 from components.publisher.publisher_dict import PublisherDict
+from components.rgb import RGBComponent
 from components.uds import UDSComponent
 from settings import load_settings
 from components.pir import PIRComponent
 from curseui import CurseUI
-from queue import LifoQueue
+from queue import LifoQueue, Queue
 from datetime import datetime
 
 try:
@@ -91,13 +93,22 @@ def main():
             uds = UDSComponent(device_values_to_display[key], settings[key], stop_event, publisher)
             uds.run(threads)
         elif device_type == "LED":
+            # FIXME: these that take commands should probably be regular queues, possible error when real world
             command_queues[key] = LifoQueue()
             row_templates[key] = (int(settings[key]["row"]),
                                   "{code:10} at {timestamp} | Light is {onoff}")
             abz = LEDComponent(device_values_to_display[key], settings[key],
                                stop_event, command_queues[key])
             abz.run(threads)
+        elif device_type == "RGB":
+            command_queues[key] = Queue()
+            row_templates[key] = (int(settings[key]["row"]),
+                                  "{code:10} at {timestamp} | RGB colors: {color}")
+            rgb = RGBComponent(device_values_to_display[key], settings[key],
+                               stop_event, command_queues[key])
+            rgb.run(threads)
         elif device_type == "ABZ":
+            # FIXME: these that take commands should probably be regular queues, possible error when real world
             command_queues[key] = LifoQueue()
             row_templates[key] = (int(settings[key]["row"]),
                                   "{code:10} at {timestamp} | Buzzer {buzz}")
