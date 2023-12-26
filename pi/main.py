@@ -1,19 +1,8 @@
 import sys
-import threading
 import logging
 
-from components.abz import ABZComponent
-from components.btn import BTNComponent
-from components.dht import DHTComponent
-from components.led import LEDComponent
-from components.mbr import MBRComponent
-from components.publisher.publisher_dict import PublisherDict
-from components.rgb import RGBComponent
-from components.uds import UDSComponent
+from curse.curseuibuilder import CurseUIBuilder
 from settings import load_settings
-from components.pir import PIRComponent
-from curse.curseui import CurseUI
-from queue import LifoQueue, Queue
 from datetime import datetime
 
 try:
@@ -50,74 +39,33 @@ def main():
     running_pi = 2
     if len(sys.argv) > 1 and sys.argv[1] in {"1", "2", "3"}:
         running_pi = sys.argv[1]
-    device_values_to_display = {}
-    command_queues = {}
-    row_templates = {}
     init_log()
     logging.debug('Starting app')
     settings = load_settings()[f"PI{running_pi}"]
     check_pin_collision(settings)
     threads = []
-    stop_event = threading.Event()
-    publishers = PublisherDict()
-    for key in settings:
-        device_values_to_display[key] = LifoQueue()
-        settings[key]["runs_on"] = "PI1"
-        device_type = settings[key]["type"]
-        publisher = publishers[device_type]
+    ui_builder = CurseUIBuilder(running_pi)
+    for key, component_settings in settings.items():
+        device_type = component_settings["type"]
         if device_type == "DHT":
-            row_templates[key] = (int(settings[key]["row"]),
-                                  "{code:10} at {timestamp} | Humidity: "
-                                  "{humidity:> 6.4} and Temperature: {temperature:> 7.5}")
-            dht = DHTComponent(device_values_to_display[key], settings[key], stop_event, publisher)
-            dht.run(threads)
+            ui_builder.add_dht(key, component_settings).run(threads)
         elif device_type == "PIR":
-            row_templates[key] = (int(settings[key]["row"]),
-                                  "{code:10} at {timestamp} | Motion detected")
-            pir = PIRComponent(device_values_to_display[key], settings[key], stop_event, publisher)
-            pir.run(threads)
+            ui_builder.add_pir(key, component_settings).run(threads)
         elif device_type == "BTN":
-            row_templates[key] = (int(settings[key]["row"]),
-                                  "{code:10} at {timestamp} | Button pressed")
-            btn = BTNComponent(device_values_to_display[key], settings[key], stop_event, publisher)
-            btn.run(threads)
+            ui_builder.add_btn(key, component_settings).run(threads)
         elif device_type == "MBR":
-            row_templates[key] = (int(settings[key]["row"]),
-                                  "{code:10} at {timestamp} | Keys: {keys}")
-            mbr = MBRComponent(device_values_to_display[key], settings[key], stop_event, publisher)
-            mbr.run(threads)
+            ui_builder.add_mbr(key, component_settings).run(threads)
         elif device_type == "UDS":
-            row_templates[key] = (int(settings[key]["row"]),
-                                  "{code:10} at {timestamp} | Distance: {distance:> 7.5}")
-            uds = UDSComponent(device_values_to_display[key], settings[key], stop_event, publisher)
-            uds.run(threads)
+            ui_builder.add_uds(key, component_settings).run(threads)
         elif device_type == "LED":
-            # FIXME: these that take commands should probably be regular queues, possible error when real world
-            command_queues[key] = LifoQueue()
-            row_templates[key] = (int(settings[key]["row"]),
-                                  "{code:10} at {timestamp} | Light is {onoff}")
-            abz = LEDComponent(device_values_to_display[key], settings[key],
-                               stop_event, command_queues[key])
-            abz.run(threads)
+            ui_builder.add_led(key, component_settings).run(threads)
         elif device_type == "RGB":
-            command_queues[key] = Queue()
-            row_templates[key] = (int(settings[key]["row"]),
-                                  "{code:10} at {timestamp} | RGB colors: {color}")
-            rgb = RGBComponent(device_values_to_display[key], settings[key],
-                               stop_event, command_queues[key])
-            rgb.run(threads)
+            ui_builder.add_rgb(key, component_settings).run(threads)
         elif device_type == "ABZ":
-            # FIXME: these that take commands should probably be regular queues, possible error when real world
-            command_queues[key] = LifoQueue()
-            row_templates[key] = (int(settings[key]["row"]),
-                                  "{code:10} at {timestamp} | Buzzer {buzz}")
-            abz = ABZComponent(device_values_to_display[key], settings[key],
-                               stop_event, command_queues[key])
-            abz.run(threads)
+            ui_builder.add_abz(key, component_settings).run(threads)
         logging.info(f"Success loading component: {key}")
 
-    logging.debug(f"RowT: {row_templates}")
-    ui = CurseUI(device_values_to_display, row_templates, command_queues)
+    ui, stop_event = ui_builder.build()
     try:
         ui.draw_loop()
     except KeyboardInterrupt:
