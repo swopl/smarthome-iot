@@ -108,7 +108,7 @@
             "codename": "RPIR3",
             "type": "PIR",
             "row": 5,
-            "pin": 22
+            "pin": 6
         },
         "RDHT3": {
             "simulated": true,
@@ -116,6 +116,29 @@
             "type": "DHT",
             "row": 6,
             "pin": 17
+        }
+    },
+    "PI3": {
+        "RPIR4": {
+            "simulated": true,
+            "codename": "RPIR4",
+            "type": "PIR",
+            "row": 1,
+            "pin": 22
+        },
+        "RDHT4": {
+            "simulated": true,
+            "codename": "RDHT4",
+            "type": "DHT",
+            "row": 2,
+            "pin": 17
+        },
+        "BIR": {
+            "simulated": true,
+            "codename": "BIR",
+            "type": "PIR",
+            "row": 3,
+            "pin": 6
         }
     }
 }
