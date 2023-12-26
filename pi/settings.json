@@ -131,7 +131,7 @@
             "codename": "RDHT4",
             "type": "DHT",
             "row": 2,
-            "pin": 17
+            "pin": 27
         },
         "BRGB": {
             "simulated": true,
@@ -141,6 +141,13 @@
             "pin_r": 12,
             "pin_g": 13,
             "pin_b": 19
+        },
+        "BIR": {
+            "simulated": true,
+            "codename": "BIR",
+            "type": "IR_RECEIVER",
+            "row": 4,
+            "pin": 17
         }
     }
 }

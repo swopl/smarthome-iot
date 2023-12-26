@@ -4,6 +4,7 @@ from queue import LifoQueue, Queue
 from components.abz import ABZComponent
 from components.btn import BTNComponent
 from components.dht import DHTComponent
+from components.ir_receiver import IRReceiverComponent
 from components.led import LEDComponent
 from components.mbr import MBRComponent
 from components.pir import PIRComponent
@@ -45,6 +46,14 @@ class CurseUIBuilder:
                                    "{code:10} at {timestamp} | Motion detected")
         return PIRComponent(self.display_queues[key], component_settings, self.stop_event,
                             self.publishers[component_settings["type"]])
+
+    def add_ir_receiver(self, key, component_settings):
+        self.display_queues[key] = LifoQueue()
+        component_settings["runs_on"] = f"PI{self.running_pi}"
+        self.row_templates[key] = (int(component_settings["row"]),
+                                   "{code:10} at {timestamp} | IR Received {message:>6}")
+        return IRReceiverComponent(self.display_queues[key], component_settings, self.stop_event,
+                                   self.publishers[component_settings["type"]])
 
     def add_btn(self, key, component_settings):
         self.display_queues[key] = LifoQueue()

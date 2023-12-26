@@ -58,6 +58,8 @@ def main():
             ui_builder.add_dht(key, component_settings).run(threads)
         elif device_type == "PIR":
             ui_builder.add_pir(key, component_settings).run(threads)
+        elif device_type == "IR_RECEIVER":
+            ui_builder.add_ir_receiver(key, component_settings).run(threads)
         elif device_type == "BTN":
             ui_builder.add_btn(key, component_settings).run(threads)
         elif device_type == "MBR":
