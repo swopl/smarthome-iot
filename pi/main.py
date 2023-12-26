@@ -52,6 +52,7 @@ def main():
     check_pin_collision(settings)
     threads = []
     ui_builder = CurseUIBuilder(running_pi)
+    rgb = None
     for key, component_settings in settings.items():
         device_type = component_settings["type"]
         if device_type == "DHT":
@@ -59,7 +60,7 @@ def main():
         elif device_type == "PIR":
             ui_builder.add_pir(key, component_settings).run(threads)
         elif device_type == "IR_RECEIVER":
-            ui_builder.add_ir_receiver(key, component_settings).run(threads)
+            ui_builder.add_ir_receiver(key, component_settings, rgb.command_queue).run(threads)
         elif device_type == "BTN":
             ui_builder.add_btn(key, component_settings).run(threads)
         elif device_type == "MBR":
@@ -69,7 +70,8 @@ def main():
         elif device_type == "LED":
             ui_builder.add_led(key, component_settings).run(threads)
         elif device_type == "RGB":
-            ui_builder.add_rgb(key, component_settings).run(threads)
+            rgb = ui_builder.add_rgb(key, component_settings)
+            rgb.run(threads)
         elif device_type == "ABZ":
             ui_builder.add_abz(key, component_settings).run(threads)
         logging.info(f"Success loading component: {key}")

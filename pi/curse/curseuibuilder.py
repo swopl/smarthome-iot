@@ -47,13 +47,14 @@ class CurseUIBuilder:
         return PIRComponent(self.display_queues[key], component_settings, self.stop_event,
                             self.publishers[component_settings["type"]])
 
-    def add_ir_receiver(self, key, component_settings):
+    def add_ir_receiver(self, key, component_settings, rgb_command_queue):
         self.display_queues[key] = LifoQueue()
         component_settings["runs_on"] = f"PI{self.running_pi}"
         self.row_templates[key] = (int(component_settings["row"]),
                                    "{code:10} at {timestamp} | IR Received {message:>6}")
         return IRReceiverComponent(self.display_queues[key], component_settings, self.stop_event,
-                                   self.publishers[component_settings["type"]])
+                                   self.publishers[component_settings["type"]],
+                                   rgb_command_queue)
 
     def add_btn(self, key, component_settings):
         self.display_queues[key] = LifoQueue()
