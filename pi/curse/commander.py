@@ -9,7 +9,7 @@ def _do_quit():
 def _dialog_read_line(msg, stdscr):
     # TODO: check if staying in the dialog somehow breaks anything
     rows, cols = stdscr.getmaxyx()
-    dialog = curses.newwin(4, 40, 4, 8)
+    dialog = curses.newwin(4, 50, 4, 8)
     dialog.border(0)
     dialog.addstr(0, 2, msg)
     curses.echo()
@@ -21,7 +21,7 @@ def _dialog_read_line(msg, stdscr):
 
 def _dialog_read_rgb_color(msg, stdscr):
     # TODO: handle bad input
-    return tuple(int(chr(num)) for num in _dialog_read_line(stdscr, msg))
+    return tuple(int(chr(num)) for num in _dialog_read_line(msg, stdscr))
 
 
 class CurseCommandBuilder:
@@ -47,7 +47,7 @@ class CurseCommandBuilder:
     def add_rgb(self, rgb_name):
         self.add_command(self._keypool.pop(),
                          (rgb_name, None, partial(_dialog_read_rgb_color,
-                                                  f"Enter {rgb_name} color (format: ### eg. 101),")),
+                                                  f"Enter {rgb_name} color (format: ### eg. 101)")),
                          f"Set {rgb_name} color")
 
     def build(self):
