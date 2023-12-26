@@ -137,7 +137,7 @@
             "simulated": true,
             "codename": "BRGB",
             "type": "RGB",
-            "row": 4,
+            "row": 3,
             "pin_r": 12,
             "pin_g": 13,
             "pin_b": 19

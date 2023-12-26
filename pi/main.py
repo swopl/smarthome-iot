@@ -1,3 +1,4 @@
+import os.path
 import sys
 import logging
 
@@ -36,7 +37,9 @@ def check_pin_collision(settings: dict):
 def init_log():
     t = datetime.now()
     timestamp = t.strftime("%Y-%m-%d-%H%M%S")
-    logging.basicConfig(filename=f"iot-{timestamp}.log", level=logging.DEBUG)
+    if not os.path.exists("./log"):
+        os.makedirs("./log")
+    logging.basicConfig(filename=f"./log/iot-{timestamp}.log", level=logging.DEBUG)
 
 
 def main():
