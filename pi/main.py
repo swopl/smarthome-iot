@@ -22,30 +22,18 @@ except:
     pass
 
 
-def check_pin_collision(settings):
+def check_pin_collision(settings: dict):
     used_pins = []
-    if not settings['RDHT1']['simulated']:
-        used_pins.append(settings['RDHT1']['pin'])
-    if not settings['RDHT2']['simulated']:
-        used_pins.append(settings['RDHT2']['pin'])
+    for component_setting in settings.values():
+        if not component_setting["simulated"] and component_setting["type"] == "MBR":
+            used_pins.extend(component_setting['r'])
+            used_pins.extend(component_setting['c'])
+        elif not component_setting["simulated"] and component_setting["type"] == "UDS":
+            used_pins.append(component_setting['trig_pin'])
+            used_pins.append(component_setting['echo_pin'])
+        elif not component_setting["simulated"]:
+            used_pins.append(component_setting['pin'])
 
-    if not settings['RPIR1']['simulated']:
-        used_pins.append(settings['RPIR1']['pin'])
-    if not settings['RPIR2']['simulated']:
-        used_pins.append(settings['RPIR2']['pin'])
-    if not settings['DPIR1']['simulated']:
-        used_pins.append(settings['DPIR1']['pin'])
-
-    if not settings['DS1']['simulated']:
-        used_pins.append(settings['DS1']['pin'])
-
-    if not settings['DMS']['simulated']:
-        used_pins.extend(settings['DMS']['r'])
-        used_pins.extend(settings['DMS']['c'])
-
-    if not settings['DUS1']['simulated']:
-        used_pins.append(settings['DUS1']['trig_pin'])
-        used_pins.append(settings['DUS1']['echo_pin'])
     if len(used_pins) != len(set(used_pins)):
         raise Exception("There is a collision within the pins!")
 
