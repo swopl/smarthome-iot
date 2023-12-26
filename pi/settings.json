@@ -133,13 +133,6 @@
             "row": 2,
             "pin": 17
         },
-        "BIR": {
-            "simulated": true,
-            "codename": "BIR",
-            "type": "PIR",
-            "row": 3,
-            "pin": 6
-        },
         "BRGB": {
             "simulated": true,
             "codename": "BRGB",
