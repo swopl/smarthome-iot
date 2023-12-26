@@ -25,7 +25,8 @@ class CurseUIBuilder:
         self.running_pi = running_pi
 
     def build(self):
-        return (CurseUI(self.display_queues, self.row_templates, self.command_queues, self.command_builder),
+        return (CurseUI(self.display_queues, self.row_templates, self.command_queues,
+                        self.command_builder, self.running_pi),
                 self.stop_event)
 
     def add_dht(self, key, component_settings):

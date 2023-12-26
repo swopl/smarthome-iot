@@ -12,10 +12,12 @@ from curse.commander import CurseCommandBuilder
 # TODO: resizing support: use KEY_RESIZE
 class CurseUI:
     def __init__(self, device_values_to_display: dict[str, LifoQueue], row_templates: dict,
-                 command_queues: dict[str, LifoQueue], command_builder: CurseCommandBuilder):
+                 command_queues: dict[str, LifoQueue], command_builder: CurseCommandBuilder,
+                 running_pi):
         self.device_values = device_values_to_display
         self.row_templates = row_templates
         self.command_queues = command_queues
+        self.running_pi = running_pi
         self.drawn_rows = {}
         self.key_to_cmd, self.key_to_descr = command_builder.build()
         # FIXME: check if this works same on all python versions
@@ -54,8 +56,7 @@ class CurseUI:
                 self.command_queues[component].put(value)
             time.sleep(0.08)  # just in case to match ui faster FIXME: might not need it
         stdscr.clear()
-        # TODO: assuming here
-        stdscr.addstr(0, 0, f"{'Running on pi: PI1':128}", curses.A_REVERSE)
+        stdscr.addstr(0, 0, f"{f'Running on pi: PI{self.running_pi}':128}", curses.A_REVERSE)
         self._draw_help(stdscr)
         for key in self.device_values:
             row, template = self.row_templates[key]
