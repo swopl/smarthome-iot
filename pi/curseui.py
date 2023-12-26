@@ -8,19 +8,40 @@ from collections import defaultdict
 
 # assuming 128x24 screen
 # TODO: resizing support: use KEY_RESIZE
+def _dialog_read_line(stdscr, msg):
+    # TODO: check if staying in the dialog somehow breaks anything
+    rows, cols = stdscr.getmaxyx()
+    dialog = curses.newwin(4, 40, 4, 8)
+    dialog.border(0)
+    dialog.addstr(0, 2, msg)
+    curses.echo()
+    dialog.addstr(1, 1, ">>")
+    ret = dialog.getstr(1, 4, 3)
+    curses.noecho()
+    return ret
+
+
+def _dialog_read_rgb_color(stdscr, msg):
+    # TODO: handle bad input
+    return tuple(int(chr(num)) for num in _dialog_read_line(stdscr, msg))
+
+
 class CurseUI:
+
     def do_quit(self):
         raise KeyboardInterrupt
 
-    # TODO: move out of this class somewhere better
+    # TODO: move out of this class somewhere better. Components should decide their own commands
     key_to_cmd = {"Q": (None, do_quit),
                   "J": ("DL", False),
                   "O": ("DL", True),
-                  "B": ("DB", {"pitch": 440, "duration": 0.3})}
+                  "B": ("DB", {"pitch": 440, "duration": 0.3}),
+                  "R": ("BRGB", None)}
     key_to_descr = {"Q": "Quit",
                     "J": "Turn Door Light off",
                     "O": "Turn Door Light on",
-                    "B": "Buzz the buzzer"}
+                    "B": "Buzz the buzzer",
+                    "R": "Set RGB color"}
 
     def __init__(self, device_values_to_display: dict[str, LifoQueue], row_templates: dict,
                  command_queues: dict[str, LifoQueue]):
@@ -56,6 +77,8 @@ class CurseUI:
             if not component:
                 command(self)
             else:
+                if command is None:
+                    command = _dialog_read_rgb_color(stdscr, "Enter rgb color")
                 self.command_queues[component].put(command)
             time.sleep(0.08)  # just in case to match ui faster FIXME: might not need it
         stdscr.clear()
