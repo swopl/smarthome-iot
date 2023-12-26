@@ -5,50 +5,19 @@ from datetime import datetime
 from queue import LifoQueue, Empty
 from collections import defaultdict
 
+from curse.commander import CurseCommandBuilder
+
 
 # assuming 128x24 screen
 # TODO: resizing support: use KEY_RESIZE
-def _dialog_read_line(stdscr, msg):
-    # TODO: check if staying in the dialog somehow breaks anything
-    rows, cols = stdscr.getmaxyx()
-    dialog = curses.newwin(4, 40, 4, 8)
-    dialog.border(0)
-    dialog.addstr(0, 2, msg)
-    curses.echo()
-    dialog.addstr(1, 1, ">>")
-    ret = dialog.getstr(1, 4, 3)
-    curses.noecho()
-    return ret
-
-
-def _dialog_read_rgb_color(stdscr, msg):
-    # TODO: handle bad input
-    return tuple(int(chr(num)) for num in _dialog_read_line(stdscr, msg))
-
-
 class CurseUI:
-
-    def do_quit(self):
-        raise KeyboardInterrupt
-
-    # TODO: move out of this class somewhere better. Components should decide their own commands
-    key_to_cmd = {"Q": (None, do_quit),
-                  "J": ("DL", False),
-                  "O": ("DL", True),
-                  "B": ("DB", {"pitch": 440, "duration": 0.3}),
-                  "R": ("BRGB", None)}
-    key_to_descr = {"Q": "Quit",
-                    "J": "Turn Door Light off",
-                    "O": "Turn Door Light on",
-                    "B": "Buzz the buzzer",
-                    "R": "Set RGB color"}
-
     def __init__(self, device_values_to_display: dict[str, LifoQueue], row_templates: dict,
-                 command_queues: dict[str, LifoQueue]):
+                 command_queues: dict[str, LifoQueue], command_builder: CurseCommandBuilder):
         self.device_values = device_values_to_display
         self.row_templates = row_templates
         self.command_queues = command_queues
         self.drawn_rows = {}
+        self.key_to_cmd, self.key_to_descr = command_builder.build()
         # FIXME: check if this works same on all python versions
         self.latest_times = defaultdict(lambda: datetime.min)
 
@@ -73,13 +42,16 @@ class CurseUI:
         except curses.error:
             keypress = None
         if keypress and keypress.upper() in self.key_to_cmd:
-            component, command = self.key_to_cmd[keypress.upper()]
-            if not component:
-                command(self)
+            component, value, func = self.key_to_cmd[keypress.upper()]
+            if not component and func:
+                func()
+            elif func:
+                self.command_queues[component].put(func(stdscr))
             else:
-                if command is None:
-                    command = _dialog_read_rgb_color(stdscr, "Enter rgb color")
-                self.command_queues[component].put(command)
+                if component is None:
+                    # TODO: custom exception
+                    raise KeyboardInterrupt("Bad commanding")
+                self.command_queues[component].put(value)
             time.sleep(0.08)  # just in case to match ui faster FIXME: might not need it
         stdscr.clear()
         # TODO: assuming here
