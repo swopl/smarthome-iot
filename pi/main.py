@@ -1,3 +1,4 @@
+import sys
 import threading
 import logging
 
@@ -45,12 +46,15 @@ def init_log():
 
 
 def main():
+    running_pi = 2
+    if len(sys.argv) > 1 and sys.argv[1] in {"1", "2", "3"}:
+        running_pi = sys.argv[1]
     device_values_to_display = {}
     command_queues = {}
     row_templates = {}
     init_log()
     logging.debug('Starting app')
-    settings = load_settings()["PI1"]
+    settings = load_settings()[f"PI{running_pi}"]
     check_pin_collision(settings)
     threads = []
     stop_event = threading.Event()

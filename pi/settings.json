@@ -72,5 +72,50 @@
             "row": 10,
             "pin": 13
         }
+    },
+    "PI2": {
+        "DS2": {
+            "simulated": true,
+            "codename": "DS2",
+            "type": "BTN",
+            "row": 1,
+            "pin": 26
+        },
+        "DUS2": {
+            "simulated": true,
+            "codename": "DUS2",
+            "type": "UDS",
+            "row": 2,
+            "trig_pin": 23,
+            "echo_pin": 24
+        },
+        "DPIR2": {
+            "simulated": true,
+            "codename": "DPIR2",
+            "type": "PIR",
+            "row": 3,
+            "pin": 22
+        },
+        "GDHT": {
+            "simulated": true,
+            "codename": "GDHT",
+            "type": "DHT",
+            "row": 4,
+            "pin": 27
+        },
+        "RPIR3": {
+            "simulated": true,
+            "codename": "RPIR3",
+            "type": "PIR",
+            "row": 5,
+            "pin": 22
+        },
+        "RDHT3": {
+            "simulated": true,
+            "codename": "RDHT3",
+            "type": "DHT",
+            "row": 6,
+            "pin": 17
+        }
     }
 }
