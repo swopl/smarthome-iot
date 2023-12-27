@@ -116,6 +116,12 @@
             "type": "DHT",
             "row": 6,
             "pin": 17
+        },
+        "GSG": {
+            "simulated": true,
+            "codename": "GSG",
+            "type": "GYRO",
+            "row": 7
         }
     },
     "PI3": {
