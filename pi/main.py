@@ -93,6 +93,7 @@ def main():
             t.join()
             if t.is_alive():
                 logging.warning(f"Thread lived: {t} {t.ident} {t.name}")
+    finally:
         try:
             import RPi.GPIO as GPIO
             GPIO.cleanup()
