@@ -85,7 +85,10 @@ def main():
         for t in threads:
             stop_event.set()
         for t in threads:
+            print(t, t.ident, t.name)
             t.join()
+            if t.is_alive():
+                print("IT'S ALIVE!")
         try:
             import RPi.GPIO as GPIO
             GPIO.cleanup()

@@ -1,3 +1,4 @@
+import threading
 
 import RPi.GPIO as GPIO
 import time
@@ -89,7 +90,8 @@ def parseCheckCode(code):
 
 
 def run_dht_loop(dht, delay, callback, stop_event):
-		while True:
+	print(threading.get_ident(), dht.codename)
+	while True:
 			check = dht.readDHT11()
 			code = parseCheckCode(check)
 			humidity, temperature = dht.humidity, dht.temperature

@@ -1,3 +1,5 @@
+import threading
+
 import RPi.GPIO as GPIO
 from queue import Empty
 
@@ -23,6 +25,7 @@ class RGB:
         self.callback((0, 0, 0), self.code)
 
     def run(self):
+        print(threading.get_ident(), self.code)
         self._setup()
         self._loop()
 

@@ -1,3 +1,5 @@
+import threading
+
 import RPi.GPIO as GPIO
 import time
 
@@ -22,6 +24,8 @@ class PIR(object):
 
 def run_pir_loop(pir: PIR, stop_event):
     pir.start()
+    # TODO: take prints to log
+    print(threading.get_ident(), pir.code)
     while True:
         if stop_event.is_set():
             pir.stop()

@@ -1,3 +1,5 @@
+import threading
+
 import RPi.GPIO as GPIO
 from queue import Empty
 import time
@@ -26,6 +28,7 @@ class ABZ:
             time.sleep(delay)
 
     def run(self):
+        print(threading.get_ident(), self.code)
         self._setup()
         self._loop()
 

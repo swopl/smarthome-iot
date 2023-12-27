@@ -6,14 +6,17 @@
 # Date - 12/09/2019
 # ------------------------------------------------------------#
 # Imports modules
+import threading
+
 import RPi.GPIO as GPIO
-from datetime import datetime
+from datetime import datetime, timedelta
 import time
 from components.ir_receiver_glob import Buttons, ButtonsNames
 
 
+
 # Gets binary value
-def getBinary(pin):
+def getBinary(pin, timeout=timedelta(seconds=1)):
     # Internal vars
     num1s = 0  # Number of consecutive 1s read
     binary = 1  # The binary value
@@ -22,9 +25,13 @@ def getBinary(pin):
     value = GPIO.input(pin)  # The current value
 
     # Waits for the sensor to pull pin low
+
+    wait_start = datetime.now()
     while value:
         time.sleep(0.0001)  # This sleep decreases CPU utilization immensely
         value = GPIO.input(pin)
+        if datetime.now() - wait_start > timeout:
+            return
 
     # Records start time
     startTime = datetime.now()
@@ -90,11 +97,15 @@ class IRReceiver(object):
 
 def run_ir_receiver_loop(ir: IRReceiver, stop_event):
     ir.start()
+    print(threading.get_ident(), ir.code)
     while True:
-        in_data = convert_hex(getBinary(ir.pin))  # Runs subs to get incoming hex value
-        for button in range(len(Buttons)):  # Runs through every value in list
-            if hex(Buttons[button]) == in_data:  # Checks this against incoming
-                ir.signal_detect(ButtonsNames[button])
         if stop_event.is_set():
             ir.stop()
             break
+        binary = getBinary(ir.pin)
+        if not binary:
+            continue
+        in_data = convert_hex(binary)  # Runs subs to get incoming hex value
+        for button in range(len(Buttons)):  # Runs through every value in list
+            if hex(Buttons[button]) == in_data:  # Checks this against incoming
+                ir.signal_detect(ButtonsNames[button])
