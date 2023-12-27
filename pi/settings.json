@@ -15,7 +15,7 @@
             "pin": 27
         },
         "RPIR1": {
-            "simulated": true,
+            "simulated": false,
             "codename": "RPIR1",
             "type": "PIR",
             "row": 3,
@@ -59,7 +59,7 @@
             "echo_pin": 24
         },
         "DL": {
-            "simulated": true,
+            "simulated": false,
             "codename": "DL",
             "type": "LED",
             "row": 9,

@@ -8,7 +8,7 @@ class PIR(object):
         self.code = code
         self.callback = callback
 
-    def rising_motion_detect(self):
+    def rising_motion_detect(self, channel):
         self.callback(self.code, f"PIR on {self.pin} detected motion")
 
     def start(self):

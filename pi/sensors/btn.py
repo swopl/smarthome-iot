@@ -9,7 +9,7 @@ class BTN(object):
         self.code = code
         self.callback = callback
 
-    def btn_press(self):
+    def btn_press(self, channel):
         self.callback(self.code, f"BTN on {self.pin} pressed")
 
     def start(self):

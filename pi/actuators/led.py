@@ -38,4 +38,4 @@ class LED:
             self.callback(onoff, self.code)
 
     def _stop(self):
-        GPIO.output(self.pin, GPIO.LOW)
+        pass
