@@ -120,21 +120,21 @@
     },
     "PI3": {
         "RPIR4": {
-            "simulated": true,
+            "simulated": false,
             "codename": "RPIR4",
             "type": "PIR",
             "row": 1,
             "pin": 22
         },
         "RDHT4": {
-            "simulated": true,
+            "simulated": false,
             "codename": "RDHT4",
             "type": "DHT",
             "row": 2,
             "pin": 27
         },
         "BRGB": {
-            "simulated": true,
+            "simulated": false,
             "codename": "BRGB",
             "type": "RGB",
             "row": 3,
@@ -143,14 +143,14 @@
             "pin_b": 19
         },
         "BIR": {
-            "simulated": true,
+            "simulated": false,
             "codename": "BIR",
             "type": "IR_RECEIVER",
             "row": 4,
             "pin": 17
         },
         "BB": {
-            "simulated": true,
+            "simulated": false,
             "codename": "BB",
             "type": "ABZ",
             "row": 5,

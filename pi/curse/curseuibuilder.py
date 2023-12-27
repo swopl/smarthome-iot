@@ -33,9 +33,10 @@ class CurseUIBuilder:
     def add_dht(self, key, component_settings):
         self.display_queues[key] = LifoQueue()
         component_settings["runs_on"] = f"PI{self.running_pi}"
+        # TODO: .4 and .5 hum temp precision, but sometimes send int sometimes float
         self.row_templates[key] = (int(component_settings["row"]),
                                    "{code:10} at {timestamp} | Humidity: "
-                                   "{humidity:> 6.4} and Temperature: {temperature:> 7.5}")
+                                   "{humidity:> 6} and Temperature: {temperature:> 7}")
         return DHTComponent(self.display_queues[key], component_settings, self.stop_event,
                             self.publishers[component_settings["type"]])
 
@@ -75,8 +76,9 @@ class CurseUIBuilder:
     def add_uds(self, key, component_settings):
         self.display_queues[key] = LifoQueue()
         component_settings["runs_on"] = f"PI{self.running_pi}"
+        # TODO: .5 precision, but check if can do it
         self.row_templates[key] = (int(component_settings["row"]),
-                                   "{code:10} at {timestamp} | Distance: {distance:> 7.5}")
+                                   "{code:10} at {timestamp} | Distance: {distance:> 7}")
         return UDSComponent(self.display_queues[key], component_settings, self.stop_event,
                             self.publishers[component_settings["type"]])
 

@@ -84,6 +84,8 @@ def main():
         logging.debug('Stopping app')
         for t in threads:
             stop_event.set()
+        for t in threads:
+            t.join()
         try:
             import RPi.GPIO as GPIO
             GPIO.cleanup()
