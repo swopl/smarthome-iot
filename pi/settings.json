@@ -148,6 +148,13 @@
             "type": "IR_RECEIVER",
             "row": 4,
             "pin": 17
+        },
+        "BB": {
+            "simulated": true,
+            "codename": "BB",
+            "type": "ABZ",
+            "row": 5,
+            "pin": 16
         }
     }
 }
