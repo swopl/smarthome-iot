@@ -41,6 +41,4 @@ class RGB:
             self.callback(command, self.code)
 
     def _stop(self):
-        GPIO.output(self.pin_r, GPIO.LOW)
-        GPIO.output(self.pin_g, GPIO.LOW)
-        GPIO.output(self.pin_b, GPIO.LOW)
+        pass
