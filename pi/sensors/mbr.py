@@ -1,3 +1,6 @@
+import logging
+import threading
+
 import RPi.GPIO as GPIO
 import time
 
@@ -28,6 +31,8 @@ class MBR(object):
         GPIO.setup(self.c[1], GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         GPIO.setup(self.c[2], GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         GPIO.setup(self.c[3], GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+
+        logging.debug(f"Thread {threading.get_ident()} running {self.code}")
         self._loop(stop_event)
 
     def read_line(self, line, characters):

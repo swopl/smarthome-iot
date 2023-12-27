@@ -1,3 +1,4 @@
+import logging
 import threading
 
 import RPi.GPIO as GPIO
@@ -25,7 +26,7 @@ class RGB:
         self.callback((0, 0, 0), self.code)
 
     def run(self):
-        print(threading.get_ident(), self.code)
+        logging.debug(f"Thread {threading.get_ident()} running {self.code}")
         self._setup()
         self._loop()
 

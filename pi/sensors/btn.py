@@ -1,3 +1,6 @@
+import logging
+import threading
+
 import RPi.GPIO as GPIO
 import time
 
@@ -23,6 +26,7 @@ class BTN(object):
 
 def run_btn_loop(btn: BTN, stop_event):
     btn.start()
+    logging.debug(f"Thread {threading.get_ident()} running {btn.code}")
     while True:
         if stop_event.is_set():
             btn.stop()

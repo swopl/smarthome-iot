@@ -6,6 +6,7 @@
 # Date - 12/09/2019
 # ------------------------------------------------------------#
 # Imports modules
+import logging
 import threading
 
 import RPi.GPIO as GPIO
@@ -97,7 +98,7 @@ class IRReceiver(object):
 
 def run_ir_receiver_loop(ir: IRReceiver, stop_event):
     ir.start()
-    print(threading.get_ident(), ir.code)
+    logging.debug(f"Thread {threading.get_ident()} running {ir.code}")
     while True:
         if stop_event.is_set():
             ir.stop()

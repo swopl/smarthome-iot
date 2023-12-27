@@ -1,3 +1,4 @@
+import logging
 import threading
 
 import RPi.GPIO as GPIO
@@ -28,7 +29,7 @@ class ABZ:
             time.sleep(delay)
 
     def run(self):
-        print(threading.get_ident(), self.code)
+        logging.debug(f"Thread {threading.get_ident()} running {self.code}")
         self._setup()
         self._loop()
 

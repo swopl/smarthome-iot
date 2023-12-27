@@ -1,3 +1,4 @@
+import logging
 import threading
 
 import RPi.GPIO as GPIO
@@ -24,8 +25,7 @@ class PIR(object):
 
 def run_pir_loop(pir: PIR, stop_event):
     pir.start()
-    # TODO: take prints to log
-    print(threading.get_ident(), pir.code)
+    logging.debug(f"Thread {threading.get_ident()} running {pir.code}")
     while True:
         if stop_event.is_set():
             pir.stop()

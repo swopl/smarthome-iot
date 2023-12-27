@@ -1,3 +1,6 @@
+import logging
+import threading
+
 import RPi.GPIO as GPIO
 import time
 
@@ -57,6 +60,7 @@ class UDS(object):
 
 def run_uds_loop(uds: UDS, stop_event):
     uds.setup()
+    logging.debug(f"Thread {threading.get_ident()} running {uds.code}")
     while True:
         uds.do_reading()
         if stop_event.is_set():

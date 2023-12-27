@@ -1,3 +1,4 @@
+import logging
 import threading
 
 import RPi.GPIO as GPIO
@@ -90,12 +91,12 @@ def parseCheckCode(code):
 
 
 def run_dht_loop(dht, delay, callback, stop_event):
-	print(threading.get_ident(), dht.codename)
+	logging.debug(f"Thread {threading.get_ident()} running {dht.codename}")
 	while True:
-			check = dht.readDHT11()
-			code = parseCheckCode(check)
-			humidity, temperature = dht.humidity, dht.temperature
-			callback(humidity, temperature, dht.codename, code)
-			if stop_event.is_set():
-					break
-			time.sleep(delay)  # Delay between readings
+		check = dht.readDHT11()
+		code = parseCheckCode(check)
+		humidity, temperature = dht.humidity, dht.temperature
+		callback(humidity, temperature, dht.codename, code)
+		if stop_event.is_set():
+			break
+		time.sleep(delay)  # Delay between readings

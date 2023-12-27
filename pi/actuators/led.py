@@ -1,3 +1,6 @@
+import logging
+import threading
+
 import RPi.GPIO as GPIO
 from queue import Empty
 
@@ -17,6 +20,7 @@ class LED:
         self.callback(False, self.code)
 
     def run(self):
+        logging.debug(f"Thread {threading.get_ident()} running {self.code}")
         self._setup()
         self._loop()
 

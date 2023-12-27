@@ -15,7 +15,7 @@
             "pin": 27
         },
         "RPIR1": {
-            "simulated": false,
+            "simulated": true,
             "codename": "RPIR1",
             "type": "PIR",
             "row": 3,
@@ -59,7 +59,7 @@
             "echo_pin": 24
         },
         "DL": {
-            "simulated": false,
+            "simulated": true,
             "codename": "DL",
             "type": "LED",
             "row": 9,
@@ -120,21 +120,21 @@
     },
     "PI3": {
         "RPIR4": {
-            "simulated": false,
+            "simulated": true,
             "codename": "RPIR4",
             "type": "PIR",
             "row": 1,
             "pin": 22
         },
         "RDHT4": {
-            "simulated": false,
+            "simulated": true,
             "codename": "RDHT4",
             "type": "DHT",
             "row": 2,
             "pin": 27
         },
         "BRGB": {
-            "simulated": false,
+            "simulated": true,
             "codename": "BRGB",
             "type": "RGB",
             "row": 3,
@@ -143,14 +143,14 @@
             "pin_b": 19
         },
         "BIR": {
-            "simulated": false,
+            "simulated": true,
             "codename": "BIR",
             "type": "IR_RECEIVER",
             "row": 4,
             "pin": 17
         },
         "BB": {
-            "simulated": false,
+            "simulated": true,
             "codename": "BB",
             "type": "ABZ",
             "row": 5,
