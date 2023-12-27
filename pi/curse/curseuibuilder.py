@@ -3,6 +3,7 @@ from queue import LifoQueue, Queue
 
 from components.abz import ABZComponent
 from components.btn import BTNComponent
+from components.d47seg import D47SEGComponent
 from components.dht import DHTComponent
 from components.gyro import GyroComponent
 from components.ir_receiver import IRReceiverComponent
@@ -124,3 +125,10 @@ class CurseUIBuilder:
                                    "Rotation (d/s): {rotation:>24}")
         return GyroComponent(self.display_queues[key], component_settings, self.stop_event,
                              self.publishers[component_settings["type"]])
+
+    def add_d47seg(self, key, component_settings):
+        self.display_queues[key] = LifoQueue()
+        component_settings["runs_on"] = f"PI{self.running_pi}"
+        # TODO: check if precision allowed, if real can sometimes not be float
+        self.row_templates[key] = (int(component_settings["row"]), "{code:10} at {timestamp} | Time: {time_4d}")
+        return D47SEGComponent(self.display_queues[key], component_settings, self.stop_event)

@@ -76,6 +76,8 @@ def main():
             ui_builder.add_abz(key, component_settings).run(threads)
         elif device_type == "GYRO":
             ui_builder.add_gyro(key, component_settings).run(threads)
+        elif device_type == "D47SEG":
+            ui_builder.add_d47seg(key, component_settings).run(threads)
         logging.info(f"Success loading component: {key}")
 
     ui, stop_event = ui_builder.build()

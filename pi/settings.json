@@ -130,14 +130,14 @@
             "codename": "RPIR4",
             "type": "PIR",
             "row": 1,
-            "pin": 22
+            "pin": 1
         },
         "RDHT4": {
             "simulated": true,
             "codename": "RDHT4",
             "type": "DHT",
             "row": 2,
-            "pin": 27
+            "pin": 5
         },
         "BRGB": {
             "simulated": true,
@@ -153,7 +153,7 @@
             "codename": "BIR",
             "type": "IR_RECEIVER",
             "row": 4,
-            "pin": 17
+            "pin": 6
         },
         "BB": {
             "simulated": true,
@@ -161,6 +161,14 @@
             "type": "ABZ",
             "row": 5,
             "pin": 16
+        },
+        "B4SD": {
+            "simulated": true,
+            "codename": "B4SD",
+            "type": "D47SEG",
+            "row": 6,
+            "pins_segments": [11, 4, 23, 8, 7, 10, 18, 25],
+            "pins_digits": [22, 27, 17, 24]
         }
     }
 }
