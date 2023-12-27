@@ -11,9 +11,10 @@ class DHTComponent(Component):
         dht_thread.start()
         return dht_thread
 
-    def _callback(self, humidity, temperature, code):
+    def _callback(self, humidity, temperature, code, value_code):
         t = datetime.now()
-        self.display_queue.put({"timestamp": t, "code": code, "temperature": temperature, "humidity": humidity})
+        self.display_queue.put({"timestamp": t, "code": code, "temperature": temperature, "humidity": humidity,
+                                "value_code": value_code})
         temp_payload = {
             "measurement": "Temperature",
             "value": temperature
@@ -27,7 +28,7 @@ class DHTComponent(Component):
 
     def _run_real(self):
         from sensors.dht import run_dht_loop, DHT
-        dht = DHT(self.settings['pin'])
+        dht = DHT(self.settings['pin'], self.settings['codename'])
         dht_thread = threading.Thread(target=run_dht_loop, args=(dht, 2, self._callback, self.stop_event))
         dht_thread.start()
         return dht_thread

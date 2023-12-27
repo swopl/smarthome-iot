@@ -35,7 +35,7 @@ class CurseUIBuilder:
         component_settings["runs_on"] = f"PI{self.running_pi}"
         # TODO: .4 and .5 hum temp precision, but sometimes send int sometimes float
         self.row_templates[key] = (int(component_settings["row"]),
-                                   "{code:10} at {timestamp} | Humidity: "
+                                   "{code:10} at {timestamp} | Status: {value_code:15} Humidity: "
                                    "{humidity:> 6} and Temperature: {temperature:> 7}")
         return DHTComponent(self.display_queues[key], component_settings, self.stop_event,
                             self.publishers[component_settings["type"]])
