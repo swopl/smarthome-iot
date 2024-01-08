@@ -1,5 +1,4 @@
 from components.component import Component
-from simulators.led import LEDSimulated
 import threading
 from datetime import datetime
 

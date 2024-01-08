@@ -7,6 +7,7 @@ from components.d47seg import D47SEGComponent
 from components.dht import DHTComponent
 from components.gyro import GyroComponent
 from components.ir_receiver import IRReceiverComponent
+from components.lcd import LCDComponent
 from components.led import LEDComponent
 from components.mbr import MBRComponent
 from components.pir import PIRComponent
@@ -132,3 +133,12 @@ class CurseUIBuilder:
         # TODO: check if precision allowed, if real can sometimes not be float
         self.row_templates[key] = (int(component_settings["row"]), "{code:10} at {timestamp} | Time: {time_4d}")
         return D47SEGComponent(self.display_queues[key], component_settings, self.stop_event)
+
+    def add_lcd(self, key, component_settings):
+        self.display_queues[key] = LifoQueue()
+        component_settings["runs_on"] = f"PI{self.running_pi}"
+        self.command_queues[key] = Queue()
+        self.row_templates[key] = (int(component_settings["row"]),
+                                   "{code:10} at {timestamp} | LCD message: {message}")
+        return LCDComponent(self.display_queues[key], component_settings, self.stop_event,
+                            self.command_queues[key])

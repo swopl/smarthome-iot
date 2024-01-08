@@ -122,6 +122,12 @@
             "codename": "GSG",
             "type": "GYRO",
             "row": 7
+        },
+        "GLCD": {
+            "simulated": true,
+            "codename": "GLCD",
+            "type": "LCD",
+            "row": 8
         }
     },
     "PI3": {
