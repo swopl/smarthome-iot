@@ -33,7 +33,7 @@ class CurseUIBuilder:
                         self.command_builder, self.running_pi),
                 self.stop_event)
 
-    def add_dht(self, key, component_settings):
+    def add_dht(self, key, component_settings, command_queues=()):
         self.display_queues[key] = LifoQueue()
         component_settings["runs_on"] = f"PI{self.running_pi}"
         # TODO: .4 and .5 hum temp precision, but sometimes send int sometimes float
@@ -41,7 +41,7 @@ class CurseUIBuilder:
                                    "{code:10} at {timestamp} | Status: {value_code:17} Humidity: "
                                    "{humidity:> 6} and Temperature: {temperature:> 7}")
         return DHTComponent(self.display_queues[key], component_settings, self.stop_event,
-                            self.publishers[component_settings["type"]])
+                            self.publishers[component_settings["type"]], command_queues)
 
     def add_pir(self, key, component_settings):
         self.display_queues[key] = LifoQueue()

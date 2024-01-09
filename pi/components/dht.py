@@ -5,6 +5,10 @@ from datetime import datetime
 
 
 class DHTComponent(Component):
+    def __init__(self, display_queue, settings, stop_event, publisher, command_queues=()):
+        super().__init__(display_queue, settings, stop_event, publisher)
+        self.command_queues = command_queues
+
     def _run_simulated(self):
         dht_thread = threading.Thread(target=run_dht_simulator,
                                       args=(2, self._callback, self.stop_event, self.settings['codename']))
@@ -13,8 +17,12 @@ class DHTComponent(Component):
 
     def _callback(self, humidity, temperature, code, value_code):
         t = datetime.now()
-        self.display_queue.put({"timestamp": t, "code": code, "temperature": temperature, "humidity": humidity,
-                                "value_code": value_code})
+        local_payload = {"timestamp": t, "code": code, "temperature": temperature, "humidity": humidity,
+                         "value_code": value_code}
+        self.display_queue.put(local_payload)
+        if value_code and value_code.endswith("OK"):
+            for command_queue in self.command_queues:
+                command_queue.put(f"Hum: {humidity:> 7}\nTemp: {temperature:> 6}")
         temp_payload = {
             "measurement": "Temperature",
             "value": temperature

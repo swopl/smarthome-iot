@@ -53,10 +53,16 @@ def main():
     threads = []
     ui_builder = CurseUIBuilder(running_pi)
     rgb = None
+    lcd = None
     for key, component_settings in settings.items():
         device_type = component_settings["type"]
         if device_type == "DHT":
-            ui_builder.add_dht(key, component_settings).run(threads)
+            if component_settings["codename"] == "GDHT":
+                # FIXME: make not dependent on order
+                ui_builder.add_dht(key, component_settings,
+                                   (lcd.command_queue, )).run(threads)
+            else:
+                ui_builder.add_dht(key, component_settings).run(threads)
         elif device_type == "PIR":
             ui_builder.add_pir(key, component_settings).run(threads)
         elif device_type == "IR_RECEIVER":
@@ -79,7 +85,8 @@ def main():
         elif device_type == "D47SEG":
             ui_builder.add_d47seg(key, component_settings).run(threads)
         elif device_type == "LCD":
-            ui_builder.add_lcd(key, component_settings).run(threads)
+            lcd = ui_builder.add_lcd(key, component_settings)
+            lcd.run(threads)
         logging.info(f"Success loading component: {key}")
 
     ui, stop_event = ui_builder.build()
