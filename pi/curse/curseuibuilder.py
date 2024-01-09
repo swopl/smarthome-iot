@@ -65,7 +65,7 @@ class CurseUIBuilder:
         self.display_queues[key] = LifoQueue()
         component_settings["runs_on"] = f"PI{self.running_pi}"
         self.row_templates[key] = (int(component_settings["row"]),
-                                   "{code:10} at {timestamp} | Button pressed")
+                                   "{code:10} at {timestamp} | Button pushed in: {on_off}")
         return BTNComponent(self.display_queues[key], component_settings, self.stop_event,
                             self.publishers[component_settings["type"]])
 

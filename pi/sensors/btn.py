@@ -13,12 +13,15 @@ class BTN(object):
         self.callback = callback
 
     def btn_press(self, channel):
-        self.callback(self.code, f"BTN on {self.pin} pressed")
+        if GPIO.input(channel):
+            self.callback(self.code, True)
+        else:
+            self.callback(self.code, False)
 
     def start(self):
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(self.pin, GPIO.RISING, callback=self.btn_press, bouncetime=100)
+        GPIO.add_event_detect(self.pin, GPIO.BOTH, callback=self.btn_press, bouncetime=100)
 
     def stop(self):
         pass

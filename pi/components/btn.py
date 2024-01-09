@@ -11,12 +11,12 @@ class BTNComponent(Component):
         btn_thread.start()
         return btn_thread
 
-    def _callback(self, code, message):
+    def _callback(self, code, on_off):
         t = datetime.now()
-        self.display_queue.put({"timestamp": t, "code": code})
+        self.display_queue.put({"timestamp": t, "code": code, "on_off": on_off})
         btn_payload = {
             "measurement": "Button",
-            "value": True
+            "value": on_off
         }
         self.publisher.add_to_batch([btn_payload], ["Button"], self.settings)
 
