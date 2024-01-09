@@ -1,6 +1,6 @@
 import threading
 from queue import LifoQueue, Queue
-
+from alarm.alarmcommander import AlarmCommander
 from components.abz import ABZComponent
 from components.btn import BTNComponent
 from components.d47seg import D47SEGComponent
@@ -27,6 +27,7 @@ class CurseUIBuilder:
         self.stop_event = threading.Event()
         self.publishers = PublisherDict()
         self.running_pi = running_pi
+        self.alarm_commander = AlarmCommander()
 
     def build(self):
         return (CurseUI(self.display_queues, self.row_templates, self.command_queues,
