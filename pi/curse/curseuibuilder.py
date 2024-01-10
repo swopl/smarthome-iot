@@ -30,6 +30,7 @@ class CurseUIBuilder:
         self.alarm_commander = AlarmCommander()
 
     def build(self):
+        self.alarm_commander.activate()
         return (CurseUI(self.display_queues, self.row_templates, self.command_queues,
                         self.command_builder, self.running_pi),
                 self.stop_event)
@@ -105,6 +106,7 @@ class CurseUIBuilder:
         self.row_templates[key] = (int(component_settings["row"]),
                                    "{code:10} at {timestamp} | Buzzer {buzz}")
         self.command_builder.add_abz(key)
+        self.alarm_commander.attach_abz(self.command_queues[key])
         return ABZComponent(self.display_queues[key], component_settings, self.stop_event,
                             self.command_queues[key])
 

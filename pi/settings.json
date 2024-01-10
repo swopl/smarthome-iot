@@ -97,13 +97,13 @@
             "pin": 22
         },
         "GLCD": {
-            "simulated": true,
+            "simulated": false,
             "codename": "GLCD",
             "type": "LCD",
             "row": 8
         },
         "GDHT": {
-            "simulated": true,
+            "simulated": false,
             "codename": "GDHT",
             "type": "DHT",
             "row": 4,
