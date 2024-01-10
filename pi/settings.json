@@ -75,14 +75,14 @@
     },
     "PI2": {
         "DS2": {
-            "simulated": true,
+            "simulated": false,
             "codename": "DS2",
             "type": "BTN",
             "row": 1,
             "pin": 26
         },
         "DUS2": {
-            "simulated": true,
+            "simulated": false,
             "codename": "DUS2",
             "type": "UDS",
             "row": 2,
@@ -97,13 +97,13 @@
             "pin": 22
         },
         "GLCD": {
-            "simulated": false,
+            "simulated": true,
             "codename": "GLCD",
             "type": "LCD",
             "row": 8
         },
         "GDHT": {
-            "simulated": false,
+            "simulated": true,
             "codename": "GDHT",
             "type": "DHT",
             "row": 4,
@@ -124,7 +124,7 @@
             "pin": 17
         },
         "GSG": {
-            "simulated": true,
+            "simulated": false,
             "codename": "GSG",
             "type": "GYRO",
             "row": 7

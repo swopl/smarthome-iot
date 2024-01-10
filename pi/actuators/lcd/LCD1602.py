@@ -1,8 +1,8 @@
 import logging
 import threading
 from queue import Empty
-from PCF8574 import PCF8574_GPIO
-from Adafruit_LCD1602 import Adafruit_CharLCD
+from actuators.lcd.PCF8574 import PCF8574_GPIO
+from actuators.lcd.Adafruit_LCD1602 import Adafruit_CharLCD
 
 PCF8574_ADDRESS = 0x27  # I2C address of the PCF8574 chip.
 PCF8574A_ADDRESS = 0x3F  # I2C address of the PCF8574A chip.

@@ -1,5 +1,5 @@
 import threading
-import MPU6050
+import sensors.gyro.MPU6050 as MPU6050
 import time
 
 
