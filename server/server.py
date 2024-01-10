@@ -39,6 +39,7 @@ mqtt_client.on_message = lambda client, userdata, msg: save_to_db(json.loads(msg
 def save_to_db(data):
     print(f"Received: {data}")
     write_api = influxdb_client.write_api(write_options=SYNCHRONOUS)
+    # TODO: fix lists from gyro
     point = (
         Point(data["measurement"])
         .time(data["time"])

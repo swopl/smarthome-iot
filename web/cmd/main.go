@@ -27,7 +27,7 @@ type DeviceData struct {
 	Simulated   bool
 	Time        string
 	Measurement string
-	RunsOn      string `json:"runs_on"`
+	RunsOn      string `json:"runs_on"` // TODO: do i need this json meta?
 	Codename    string
 	Value       interface{}
 }
@@ -45,7 +45,7 @@ func handleNewData(client mqtt.Client, msg mqtt.Message) {
 	fmt.Println(data)
 }
 
-func subscribeAll(client mqtt.Client) {
+func subscribeToAllTopics(client mqtt.Client) {
 	topics := []string{
 		"Temperature",
 		"Humidity",
@@ -84,7 +84,7 @@ func main() {
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
 		log.Fatalln(token.Error())
 	}
-	subscribeAll(client)
+	subscribeToAllTopics(client)
 
 	e := echo.New()
 	homeHandler := handler.HomeHandler{DB: db}
