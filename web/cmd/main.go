@@ -2,10 +2,13 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
+	influxdb2 "github.com/influxdata/influxdb-client-go"
 	"github.com/jmoiron/sqlx"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
 	"log"
@@ -13,6 +16,7 @@ import (
 	"os"
 	"path/filepath"
 	"smarthome-back/handler"
+	"time"
 )
 
 var schema = `
@@ -25,7 +29,7 @@ CREATE TABLE alarm_clock (
 
 type DeviceData struct {
 	Simulated   bool
-	Time        string
+	Time        time.Time
 	Measurement string
 	RunsOn      string `json:"runs_on"` // TODO: do i need this json meta?
 	Codename    string
@@ -43,6 +47,31 @@ func handleNewData(client mqtt.Client, msg mqtt.Message) {
 	}
 	fmt.Print("Unmarshalled: ")
 	fmt.Println(data)
+
+	org := "FTN"
+	bucket := "example_db"
+	token := os.Getenv("INFLUX_TOKEN")
+	url := "http://localhost:8086"
+
+	// FIXME: !! Grafana showing old because of tags 'true' and 'True' difference!!
+	// TODO: optimize using async? Then must use different for alarm and regular data
+	influxClient := influxdb2.NewClient(url, token)
+	writeAPI := influxClient.WriteAPIBlocking(org, bucket)
+	//whenMeasured, err := time.Parse(time.RFC3339, data.Time)
+	//if err != nil {
+	//	log.Fatalln(err) // TODO: maybe not fatal here
+	//}
+	p := influxdb2.NewPointWithMeasurement(data.Measurement).
+		SetTime(data.Time).
+		AddTag("codename", data.Codename).
+		AddTag("runs_on", data.RunsOn).
+		AddTag("simulated", fmt.Sprint(data.Simulated)).
+		AddField("measurement", data.Value)
+	err = writeAPI.WritePoint(context.Background(), p)
+	if err != nil {
+		log.Fatalln(err) // TODO: maybe not fatal here
+	}
+	influxClient.Close()
 }
 
 func subscribeToAllTopics(client mqtt.Client) {
@@ -65,7 +94,11 @@ func subscribeToAllTopics(client mqtt.Client) {
 }
 
 func main() {
-	err := os.MkdirAll("./db", 0755)
+	err := godotenv.Load("./secret.env")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	err = os.MkdirAll("./db", 0755)
 	if err != nil {
 		log.Fatalln(err)
 	}
