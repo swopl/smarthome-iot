@@ -14,9 +14,10 @@ class BTN(object):
 
     def btn_press(self, channel):
         if GPIO.input(channel):
-            self.callback(self.code, True)
-        else:
+            # FIXME: i had to invert these, i thought it was different?
             self.callback(self.code, False)
+        else:
+            self.callback(self.code, True)
 
     def start(self):
         GPIO.setmode(GPIO.BCM)
