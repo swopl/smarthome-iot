@@ -75,14 +75,14 @@
     },
     "PI2": {
         "DS2": {
-            "simulated": false,
+            "simulated": true,
             "codename": "DS2",
             "type": "BTN",
             "row": 1,
             "pin": 26
         },
         "DUS2": {
-            "simulated": false,
+            "simulated": true,
             "codename": "DUS2",
             "type": "UDS",
             "row": 2,
@@ -124,7 +124,7 @@
             "pin": 17
         },
         "GSG": {
-            "simulated": false,
+            "simulated": true,
             "codename": "GSG",
             "type": "GYRO",
             "row": 7

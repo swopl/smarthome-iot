@@ -14,14 +14,13 @@ class UDS(object):
 
     def do_reading(self):
         distance = self._get_distance()
+        logging.debug(f"UDS.do_reading: {distance}; Trig: {self.trig_pin}, Echo: {self.echo_pin}")
         # distance is None when measurement times out
         if distance is not None:
             self.callback(self.code, distance)
 
     def setup(self):
         GPIO.setmode(GPIO.BCM)
-        GPIO.setmode(GPIO.BCM)
-
         GPIO.setup(self.trig_pin, GPIO.OUT)
         GPIO.setup(self.echo_pin, GPIO.IN)
 
@@ -34,7 +33,7 @@ class UDS(object):
         pulse_start_time = time.time()
         pulse_end_time = time.time()
 
-        max_iter = 100
+        max_iter = 1000
 
         iter = 0
         while GPIO.input(self.echo_pin) == 0:
