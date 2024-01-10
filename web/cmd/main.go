@@ -57,10 +57,6 @@ func handleNewData(client mqtt.Client, msg mqtt.Message) {
 	// TODO: optimize using async? Then must use different for alarm and regular data
 	influxClient := influxdb2.NewClient(url, token)
 	writeAPI := influxClient.WriteAPIBlocking(org, bucket)
-	//whenMeasured, err := time.Parse(time.RFC3339, data.Time)
-	//if err != nil {
-	//	log.Fatalln(err) // TODO: maybe not fatal here
-	//}
 	p := influxdb2.NewPointWithMeasurement(data.Measurement).
 		SetTime(data.Time).
 		AddTag("codename", data.Codename).
