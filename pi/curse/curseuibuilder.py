@@ -27,10 +27,9 @@ class CurseUIBuilder:
         self.stop_event = threading.Event()
         self.publishers = PublisherDict()
         self.running_pi = running_pi
-        self.alarm_commander = AlarmCommander()
+        self.alarm_commander = AlarmCommander(self.stop_event)
 
     def build(self):
-        self.alarm_commander.activate()
         return (CurseUI(self.display_queues, self.row_templates, self.command_queues,
                         self.command_builder, self.running_pi),
                 self.stop_event)
@@ -68,7 +67,7 @@ class CurseUIBuilder:
         self.row_templates[key] = (int(component_settings["row"]),
                                    "{code:10} at {timestamp} | Button pushed in: {on_off}")
         return BTNComponent(self.display_queues[key], component_settings, self.stop_event,
-                            self.publishers[component_settings["type"]])
+                            self.publishers[component_settings["type"]], self.alarm_commander.btn_queue)
 
     def add_mbr(self, key, component_settings):
         self.display_queues[key] = LifoQueue()
