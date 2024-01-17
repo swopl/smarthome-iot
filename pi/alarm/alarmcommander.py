@@ -11,9 +11,12 @@ class AlarmCommander:
         self.stop_event = stop_event
         self.abz_queues = []
         self.btn_queue = Queue()
+        self.mbr_queue = Queue()
         self.btn_state = False
         self.when_btn_pressed = datetime.now()
         self.alarm_active = False
+        self.door_security_active = False
+        self.secret_password = "1234"  # TODO: actually extract to secret
 
     def activate(self) -> threading.Thread:
         alarm_thread = threading.Thread(target=self._loop, args=())
@@ -25,6 +28,7 @@ class AlarmCommander:
             if self.stop_event.is_set():
                 break
             time.sleep(1.1)
+            self._check_mbr()
             self._check_button()
             if self.alarm_active:
                 # TODO: also display on curse ui
@@ -45,6 +49,22 @@ class AlarmCommander:
             self.alarm_active = True
         if not state:
             self.btn_state = state
+
+    def _check_mbr(self):
+        try:
+            keys = self.mbr_queue.get(timeout=0.03)
+        except Empty:
+            return
+        if not keys:
+            # TODO: will it ever actually get in here?
+            return
+        if keys[:-1] == self.secret_password:
+            logging.info("MBR security system toggled")
+            # TODO: if alarm active, disable it (maybe use different password for that)
+            # TODO: send to server so other pi knows
+            self.door_security_active = not self.door_security_active
+        else:
+            logging.info("Wrong password attempted!")
 
     def attach_abz(self, abz_queue):
         self.abz_queues.append(abz_queue)

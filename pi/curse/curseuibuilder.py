@@ -75,7 +75,7 @@ class CurseUIBuilder:
         self.row_templates[key] = (int(component_settings["row"]),
                                    "{code:10} at {timestamp} | Keys: {keys}")
         return MBRComponent(self.display_queues[key], component_settings, self.stop_event,
-                            self.publishers[component_settings["type"]])
+                            self.publishers[component_settings["type"]], self.alarm_commander.mbr_queue)
 
     def add_uds(self, key, component_settings):
         self.display_queues[key] = LifoQueue()
