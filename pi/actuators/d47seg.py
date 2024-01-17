@@ -5,6 +5,8 @@ import time
 
 
 class D47SEG:
+    # TODO: FIXME: dont use pin 4!!!! It makes problems because it is GP CLK.
+    # CHANGE IT IN settings.json to sth else
     num = {' ': (0, 0, 0, 0, 0, 0, 0),
            '0': (1, 1, 1, 1, 1, 1, 0),
            '1': (0, 1, 1, 0, 0, 0, 0),
