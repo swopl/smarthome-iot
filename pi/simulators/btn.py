@@ -5,7 +5,8 @@ import random
 def run_btn_simulator(callback, stop_event, code):
     pushed_in = False
     while True:
-        delay = random.randint(10, 16) / 2.0
+        # TODO: instead of doing this, allow push from CurseUI
+        delay = random.randint(10, 16) / 5.0
         time.sleep(delay)
         pushed_in = not pushed_in
         callback(code, pushed_in)
