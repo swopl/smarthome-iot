@@ -27,7 +27,7 @@ class AlarmCommander:
         self.mqtt_client.on_connect = self._on_mqtt_connect
         self.mqtt_client.on_message = self._process_message
 
-    def _on_mqtt_connect(self, userdata, flags, rc):
+    def _on_mqtt_connect(self, client, userdata, flags, rc):
         self.mqtt_client.subscribe("AlarmCreated")  # TODO: think about qos and others
         self.mqtt_client.subscribe("AlarmEnded")
         self.mqtt_client.subscribe("PeopleCount")  # TODO: think about qos and others
