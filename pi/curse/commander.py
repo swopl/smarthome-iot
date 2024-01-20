@@ -6,7 +6,7 @@ def _do_quit():
     raise KeyboardInterrupt
 
 
-def _dialog_read_line(msg, stdscr):
+def _dialog_read_line(msg, stdscr) -> bytes:
     # TODO: check if staying in the dialog somehow breaks anything
     rows, cols = stdscr.getmaxyx()
     dialog = curses.newwin(4, 50, 4, 8)
@@ -24,9 +24,17 @@ def _dialog_read_rgb_color(msg, stdscr):
     return tuple(int(chr(num)) for num in _dialog_read_line(msg, stdscr))
 
 
+def _dialog_read_mbr(msg, stdscr):
+    # TODO: handle bad input
+    line = str(_dialog_read_line(msg, stdscr))
+    if not line.endswith("*"):
+        line += "*"
+    return line
+
+
 class CurseCommandBuilder:
     def __init__(self):
-        self._keypool = ["R", "B", "O", "J"]
+        self._keypool = ["M", "R", "B", "O", "J"]
         self.key_to_cmd = {"Q": (None, None, _do_quit)}
         self.key_to_descr = {"Q": "Quit"}
 
@@ -49,6 +57,12 @@ class CurseCommandBuilder:
                          (rgb_name, None, partial(_dialog_read_rgb_color,
                                                   f"Enter {rgb_name} color (format: ### eg. 101)")),
                          f"Set {rgb_name} color")
+
+    def add_mbr_alarm(self, alarm_name):
+        self.add_command(self._keypool.pop(),
+                         (alarm_name, None, partial(_dialog_read_mbr,
+                                                    "Enter password (format: #### eg. 1111)")),
+                         f"Enter keys on membrane keypad")
 
     def build(self):
         return self.key_to_cmd, self.key_to_descr
