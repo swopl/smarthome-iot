@@ -64,6 +64,15 @@ class AlarmCommander:
                 # TODO: also display on curse ui
                 self._buzz_all()
 
+    def _publish_alarm(self, reason, extra, state="enabled"):
+        self.mqtt_client.publish("AlarmInfo", json.dumps({
+            "time": datetime.utcnow().isoformat() + "Z",
+            "runs_on": "TODO",  # TODO: add runs_on
+            "reason": reason,
+            "extra": extra,
+            "state": state
+        }), 2, True)
+
     def _check_button(self):
         # FIXME: this expects only one button per pi, should work for our examples
         try:
@@ -75,13 +84,7 @@ class AlarmCommander:
             self.when_btn_pressed = datetime.now()
         if self.btn_state and datetime.now() - self.when_btn_pressed >= timedelta(seconds=5):
             logging.info("Alarm activating due to DS...")
-            self.mqtt_client.publish("AlarmInfo", json.dumps({
-                "time": datetime.utcnow().isoformat() + "Z",
-                "runs_on": "TODO",  # TODO: add runs_on
-                "reason": "DS",
-                "extra": "Door sensor pushed in for longer than 5 seconds",
-                "state": "enabled"
-            }), 2, True)
+            self._publish_alarm("DS", "Door sensor pushed in for longer than 5 seconds")
         if not state:
             self.btn_state = state
 
@@ -100,13 +103,7 @@ class AlarmCommander:
             self.door_security_active = not self.door_security_active
         elif password == self.alarm_password and self.alarm_active:
             logging.info("Disabling alarm...")
-            self.mqtt_client.publish("AlarmInfo", json.dumps({
-                "time": datetime.utcnow().isoformat() + "Z",
-                "runs_on": "TODO",  # TODO: add runs_on
-                "reason": "MBR",
-                "extra": "Deactivated by password",
-                "state": "disabled"
-            }), 2, True)
+            self._publish_alarm("MBR", "Deactivated by password", "disabled")
         else:
             logging.info("Wrong password attempted!")
 
