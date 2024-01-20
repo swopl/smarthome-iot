@@ -1,11 +1,16 @@
 import datetime
 import json
 import logging
+import math
 import threading
 import time
 import paho.mqtt.client as mqtt
 from datetime import datetime, timedelta
 from queue import Queue, Empty
+
+
+def calculate_intensity(acceleration):
+    return math.sqrt(acceleration[0] ** 2 + acceleration[1] ** 2 + acceleration[2] ** 2)
 
 
 class AlarmCommander:
@@ -14,6 +19,7 @@ class AlarmCommander:
         self.abz_queues = []
         self.btn_queue = Queue()
         self.mbr_queue = Queue()
+        self.gyro_queue = Queue()
         self.btn_state = False
         self.when_btn_pressed = datetime.now()
         self.alarm_active = False
@@ -26,6 +32,7 @@ class AlarmCommander:
         self.mqtt_client.loop_start()
         self.mqtt_client.on_connect = self._on_mqtt_connect
         self.mqtt_client.on_message = self._process_message
+        self.gyro_intensities = []
 
     def _on_mqtt_connect(self, client, userdata, flags, rc):
         self.mqtt_client.subscribe("AlarmInfo")  # TODO: think about qos and others
@@ -69,9 +76,35 @@ class AlarmCommander:
             time.sleep(1.1)
             self._check_mbr()
             self._check_button()
+            self._check_gyro()
             if self.alarm_active:
                 # TODO: also display on curse ui
                 self._buzz_all()
+
+    def _calculate_gyro_movement(self):
+        # assuming every gyro comes in similar deltas
+        delta_seconds = ((self.gyro_intensities[-1][0] - self.gyro_intensities[0][0]).total_seconds() /
+                         len(self.gyro_intensities))
+        return sum(delta_seconds * delta_seconds * intensity for _, intensity in self.gyro_intensities)
+
+    def _check_gyro(self):
+        # FIXME: this expects only one gyro per pi, should work for our examples
+        try:
+            # expects gyro xyz values
+            values = self.gyro_queue.get(timeout=0.03)
+        except Empty:
+            return
+        intensity = calculate_intensity(values)
+        self.gyro_intensities.append((datetime.utcnow(), intensity))
+        self.gyro_intensities = self.gyro_intensities[-16:]
+        # if too little values, wait a bit longer
+        if len(self.gyro_intensities) <= 4:
+            return
+        movement = self._calculate_gyro_movement()
+        # TODO: experiment with movement numbers
+        if not self.alarm_active and movement > 20:
+            logging.info("Alarm activating due to GYRO...")
+            self._publish_alarm("GYRO", "Gyro safe moved too much")
 
     def _check_button(self):
         # FIXME: this expects only one button per pi, should work for our examples

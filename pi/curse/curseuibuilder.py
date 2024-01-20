@@ -130,7 +130,7 @@ class CurseUIBuilder:
                                    "{code:10} at {timestamp} | Acceleration (g): {acceleration:>24} "
                                    "Rotation (d/s): {rotation:>24}")
         return GyroComponent(self.display_queues[key], component_settings, self.stop_event,
-                             self.publishers[component_settings["type"]])
+                             self.publishers[component_settings["type"]], self.alarm_commander.gyro_queue)
 
     def add_d47seg(self, key, component_settings):
         self.display_queues[key] = LifoQueue()
