@@ -1,4 +1,5 @@
 import curses
+import logging
 from functools import partial
 
 
@@ -26,7 +27,7 @@ def _dialog_read_rgb_color(msg, stdscr):
 
 def _dialog_read_mbr(msg, stdscr):
     # TODO: handle bad input
-    line = str(_dialog_read_line(msg, stdscr, 30))
+    line = str(_dialog_read_line(msg, stdscr, 30), encoding="ascii")
     if not line.endswith("*"):
         line += "*"
     return line

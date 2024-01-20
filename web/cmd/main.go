@@ -47,6 +47,7 @@ func main() {
 	}
 	subscribeToAllTopics(client)
 	subscribeToPeopleDetection(client)
+	subscribeToAlarmInfo(client)
 
 	e := echo.New()
 	homeHandler := handler.HomeHandler{DB: db}

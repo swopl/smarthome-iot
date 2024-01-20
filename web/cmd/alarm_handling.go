@@ -61,18 +61,19 @@ func subscribeToPeopleDetection(client mqtt.Client) {
 	}
 }
 
-type AlarmCreation struct {
+type AlarmInfo struct {
 	Time   time.Time
 	RunsOn string `json:"runs_on"` // TODO: do i need this json meta?
 	Reason string
 	Extra  string
+	State  string
 }
 
-func handleNewAlarm(client mqtt.Client, msg mqtt.Message) {
+func handleNewAlarmInfo(client mqtt.Client, msg mqtt.Message) {
 	fmt.Printf("\nTOPIC: %s\n", msg.Topic())
 	fmt.Printf("MSG: %s\n", msg.Payload())
 	decoder := json.NewDecoder(bytes.NewReader(msg.Payload()))
-	var alarm AlarmCreation
+	var alarm AlarmInfo
 	err := decoder.Decode(&alarm)
 	if err != nil {
 		log.Fatalln(err) // TODO: maybe not fatal here
@@ -92,7 +93,7 @@ func handleNewAlarm(client mqtt.Client, msg mqtt.Message) {
 	p := influxdb2.NewPointWithMeasurement("Alarm").
 		SetTime(alarm.Time).
 		AddTag("runs_on", alarm.RunsOn).
-		AddTag("state", "enabled").
+		AddTag("state", alarm.State).
 		AddField("reason", alarm.Reason).
 		AddField("extra", alarm.Extra)
 	err = writeAPI.WritePoint(context.Background(), p)
@@ -102,59 +103,13 @@ func handleNewAlarm(client mqtt.Client, msg mqtt.Message) {
 	influxClient.Close()
 }
 
-func subscribeToAlarmCreated(client mqtt.Client) {
+func subscribeToAlarmInfo(client mqtt.Client) {
 	topics := []string{
-		"AlarmCreated",
+		"AlarmInfo",
 	}
 	// TODO: check what qos means in subscribe
 	for _, topic := range topics {
-		if token := client.Subscribe(topic, 0, handleNewAlarm); token.Wait() && token.Error() != nil {
-			log.Fatalln(token.Error())
-		}
-	}
-}
-
-type AlarmOver struct {
-	Time   time.Time
-	RunsOn string `json:"runs_on"` // TODO: do i need this json meta?
-}
-
-func handleAlarmEnded(client mqtt.Client, msg mqtt.Message) {
-	fmt.Printf("\nTOPIC: %s\n", msg.Topic())
-	fmt.Printf("MSG: %s\n", msg.Payload())
-	decoder := json.NewDecoder(bytes.NewReader(msg.Payload()))
-	var alarm AlarmOver
-	err := decoder.Decode(&alarm)
-	if err != nil {
-		log.Fatalln(err) // TODO: maybe not fatal here
-	}
-	fmt.Print("Unmarshalled: ")
-	fmt.Println(alarm)
-
-	org := "FTN"
-	bucket := "example_db"
-	token := os.Getenv("INFLUX_TOKEN")
-	url := "http://localhost:8086"
-
-	influxClient := influxdb2.NewClient(url, token)
-	writeAPI := influxClient.WriteAPIBlocking(org, bucket)
-	p := influxdb2.NewPointWithMeasurement("Alarm").
-		SetTime(alarm.Time).
-		AddTag("runs_on", alarm.RunsOn).
-		AddTag("state", "disabled")
-	err = writeAPI.WritePoint(context.Background(), p)
-	if err != nil {
-		log.Fatalln(err) // TODO: maybe not fatal here
-	}
-	influxClient.Close()
-}
-
-func subscribeToAlarmEnded(client mqtt.Client) {
-	topics := []string{
-		"AlarmEnded",
-	}
-	for _, topic := range topics {
-		if token := client.Subscribe(topic, 0, handleAlarmEnded); token.Wait() && token.Error() != nil {
+		if token := client.Subscribe(topic, 0, handleNewAlarmInfo); token.Wait() && token.Error() != nil {
 			log.Fatalln(token.Error())
 		}
 	}

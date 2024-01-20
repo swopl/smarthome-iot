@@ -28,21 +28,23 @@ class AlarmCommander:
         self.mqtt_client.on_message = self._process_message
 
     def _on_mqtt_connect(self, client, userdata, flags, rc):
-        self.mqtt_client.subscribe("AlarmCreated")  # TODO: think about qos and others
-        self.mqtt_client.subscribe("AlarmEnded")
+        self.mqtt_client.subscribe("AlarmInfo")  # TODO: think about qos and others
         self.mqtt_client.subscribe("PeopleCount")  # TODO: think about qos and others
 
     def _process_message(self, client, userdata, message):
-        if message.topic == "AlarmCreated":
-            logging.info("Alarm: ENABLED")
-            self.alarm_active = True
-        elif message.topic == "AlarmEnded":
-            logging.info("Alarm: DISABLED")
-            self.alarm_active = False
+        payload = json.loads(message.payload.decode("utf-8"))
+        if message.topic == "AlarmInfo":
+            if payload["state"] == "enabled":
+                logging.info("Alarm: ENABLED")
+                self.alarm_active = True
+            elif payload["state"] == "disabled":
+                logging.info("Alarm: DISABLED")
+                self.alarm_active = False
+            else:
+                logging.fatal(f"Unknown alarm state received: {payload['state']}")
         elif message.topic == "PeopleCount":
-            payload = json.loads(message.payload.decode("utf-8"))
             logging.info(f"Received PeopleCount payload: {payload}")
-            self.person_count = payload
+            self.person_count = payload  # TODO: test
         else:
             logging.warning(f"Unknown topic: {message.topic}")
 
@@ -73,11 +75,12 @@ class AlarmCommander:
             self.when_btn_pressed = datetime.now()
         if self.btn_state and datetime.now() - self.when_btn_pressed >= timedelta(seconds=5):
             logging.info("Alarm activating due to DS...")
-            self.mqtt_client.publish("AlarmCreated", json.dumps({
+            self.mqtt_client.publish("AlarmInfo", json.dumps({
                 "time": datetime.utcnow().isoformat() + "Z",
                 "runs_on": "TODO",  # TODO: add runs_on
                 "reason": "DS",
                 "extra": "Door sensor pushed in for longer than 5 seconds",
+                "state": "enabled"
             }), 2, True)
         if not state:
             self.btn_state = state
@@ -97,9 +100,12 @@ class AlarmCommander:
             self.door_security_active = not self.door_security_active
         elif password == self.alarm_password and self.alarm_active:
             logging.info("Disabling alarm...")
-            self.mqtt_client.publish("AlarmEnded", json.dumps({
+            self.mqtt_client.publish("AlarmInfo", json.dumps({
                 "time": datetime.utcnow().isoformat() + "Z",
                 "runs_on": "TODO",  # TODO: add runs_on
+                "reason": "MBR",
+                "extra": "Deactivated by password",
+                "state": "disabled"
             }), 2, True)
         else:
             logging.info("Wrong password attempted!")
