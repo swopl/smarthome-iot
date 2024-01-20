@@ -115,7 +115,8 @@ class AlarmCommander:
         if not self.btn_state and state:
             self.btn_state = state
             self.when_btn_pressed = datetime.now()
-        if self.btn_state and datetime.now() - self.when_btn_pressed >= timedelta(seconds=5):
+        if (not self.alarm_active and
+                self.btn_state and datetime.now() - self.when_btn_pressed >= timedelta(seconds=5)):
             logging.info("Alarm activating due to DS...")
             self._publish_alarm("DS", "Door sensor pushed in for longer than 5 seconds")
         if not state:
