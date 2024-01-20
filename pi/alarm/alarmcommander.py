@@ -48,6 +48,15 @@ class AlarmCommander:
         else:
             logging.warning(f"Unknown topic: {message.topic}")
 
+    def _publish_alarm(self, reason, extra, state="enabled"):
+        self.mqtt_client.publish("AlarmInfo", json.dumps({
+            "time": datetime.utcnow().isoformat() + "Z",
+            "runs_on": "TODO",  # TODO: add runs_on
+            "reason": reason,
+            "extra": extra,
+            "state": state
+        }), 2, True)
+
     def activate(self) -> threading.Thread:
         alarm_thread = threading.Thread(target=self._loop, args=())
         alarm_thread.start()
@@ -63,15 +72,6 @@ class AlarmCommander:
             if self.alarm_active:
                 # TODO: also display on curse ui
                 self._buzz_all()
-
-    def _publish_alarm(self, reason, extra, state="enabled"):
-        self.mqtt_client.publish("AlarmInfo", json.dumps({
-            "time": datetime.utcnow().isoformat() + "Z",
-            "runs_on": "TODO",  # TODO: add runs_on
-            "reason": reason,
-            "extra": extra,
-            "state": state
-        }), 2, True)
 
     def _check_button(self):
         # FIXME: this expects only one button per pi, should work for our examples
