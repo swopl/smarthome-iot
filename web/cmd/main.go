@@ -46,6 +46,7 @@ func main() {
 		log.Fatalln(token.Error())
 	}
 	subscribeToAllTopics(client)
+	subscribeToPeopleDetection(client)
 
 	e := echo.New()
 	homeHandler := handler.HomeHandler{DB: db}
