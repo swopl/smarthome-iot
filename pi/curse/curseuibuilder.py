@@ -30,9 +30,6 @@ class CurseUIBuilder:
         self.alarm_commander = AlarmCommander(self.stop_event)
 
     def build(self):
-        alarm_mbr_key = "_ALARM_FROM_MBR"
-        self.command_queues[alarm_mbr_key] = self.alarm_commander.mbr_queue
-        self.command_builder.add_mbr_alarm(alarm_mbr_key)
         return (CurseUI(self.display_queues, self.row_templates, self.command_queues,
                         self.command_builder, self.running_pi),
                 self.stop_event)
@@ -77,6 +74,9 @@ class CurseUIBuilder:
         component_settings["runs_on"] = f"PI{self.running_pi}"
         self.row_templates[key] = (int(component_settings["row"]),
                                    "{code:10} at {timestamp} | Keys: {keys}")
+        alarm_mbr_key = "_ALARM_FROM_MBR"
+        self.command_queues[alarm_mbr_key] = self.alarm_commander.mbr_queue
+        self.command_builder.add_mbr_alarm(alarm_mbr_key)
         return MBRComponent(self.display_queues[key], component_settings, self.stop_event,
                             self.publishers[component_settings["type"]], self.alarm_commander.mbr_queue)
 
