@@ -6,7 +6,7 @@ def _do_quit():
     raise KeyboardInterrupt
 
 
-def _dialog_read_line(msg, stdscr) -> bytes:
+def _dialog_read_line(msg, stdscr, max_size=3) -> bytes:
     # TODO: check if staying in the dialog somehow breaks anything
     rows, cols = stdscr.getmaxyx()
     dialog = curses.newwin(4, 50, 4, 8)
@@ -14,7 +14,7 @@ def _dialog_read_line(msg, stdscr) -> bytes:
     dialog.addstr(0, 2, msg)
     curses.echo()
     dialog.addstr(1, 1, ">>")
-    ret = dialog.getstr(1, 4, 3)
+    ret = dialog.getstr(1, 4, max_size)
     curses.noecho()
     return ret
 
@@ -26,7 +26,7 @@ def _dialog_read_rgb_color(msg, stdscr):
 
 def _dialog_read_mbr(msg, stdscr):
     # TODO: handle bad input
-    line = str(_dialog_read_line(msg, stdscr))
+    line = str(_dialog_read_line(msg, stdscr, 30))
     if not line.endswith("*"):
         line += "*"
     return line
@@ -61,7 +61,7 @@ class CurseCommandBuilder:
     def add_mbr_alarm(self, alarm_name):
         self.add_command(self._keypool.pop(),
                          (alarm_name, None, partial(_dialog_read_mbr,
-                                                    "Enter password (format: #### eg. 1111)")),
+                                                    "Enter alarm or security system password")),
                          f"Enter keys on membrane keypad")
 
     def build(self):

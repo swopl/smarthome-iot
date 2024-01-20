@@ -23,11 +23,14 @@ class AlarmCommander:
         self.person_count = -1
         self.mqtt_client = mqtt.Client()
         self.mqtt_client.connect("localhost", 1883, 60)  # TODO: extract host to file
+        self.mqtt_client.loop_start()
+        self.mqtt_client.on_connect = self._on_mqtt_connect
+        self.mqtt_client.on_message = self._process_message
+
+    def _on_mqtt_connect(self, userdata, flags, rc):
         self.mqtt_client.subscribe("AlarmCreated")  # TODO: think about qos and others
         self.mqtt_client.subscribe("AlarmEnded")
         self.mqtt_client.subscribe("PeopleCount")  # TODO: think about qos and others
-        self.mqtt_client.on_message = self._process_message
-        # TODO: mqtt topics
 
     def _process_message(self, client, userdata, message):
         if message.topic == "AlarmCreated":
