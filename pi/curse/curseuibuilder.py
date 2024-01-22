@@ -110,7 +110,8 @@ class CurseUIBuilder:
         self.row_templates[key] = (int(component_settings["row"]),
                                    "{code:10} at {timestamp} | Buzzer {buzz}")
         self.command_builder.add_abz(key)
-        self.alarm_commander.attach_abz(self.command_queues[key])
+        bedroom = component_settings["codename"].startswith("B")  # We will assume others are not in bedroom
+        self.alarm_commander.attach_abz(self.command_queues[key], bedroom)
         return ABZComponent(self.display_queues[key], component_settings, self.stop_event,
                             self.command_queues[key])
 

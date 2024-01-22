@@ -17,6 +17,7 @@ class AlarmCommander:
     def __init__(self, stop_event):
         self.stop_event = stop_event
         self.abz_queues = []
+        self.bedroom_abz_queue = Queue()
         self.btn_queue = Queue()
         self.mbr_queue = Queue()
         self.gyro_queue = Queue()
@@ -37,10 +38,12 @@ class AlarmCommander:
         self.mqtt_client.on_message = self._process_message
         self.gyro_intensities = []
         self.uds_distances = []
+        self.wakeup_alert_active = False
 
     def _on_mqtt_connect(self, client, userdata, flags, rc):
         self.mqtt_client.subscribe("AlarmInfo")  # TODO: think about qos and others
         self.mqtt_client.subscribe("PeopleCount")  # TODO: think about qos and others
+        self.mqtt_client.subscribe("WakeupAlert")
 
     def _process_message(self, client, userdata, message):
         payload = json.loads(message.payload.decode("utf-8"))
@@ -56,6 +59,15 @@ class AlarmCommander:
         elif message.topic == "PeopleCount":
             logging.info(f"Received PeopleCount payload: {payload}")
             self.person_count = int(payload)  # TODO: test
+        elif message.topic == "WakeupAlert":
+            if payload["state"] == "enabled":
+                logging.info("WakeupAlert: ENABLED")
+                self.wakeup_alert_active = True
+            elif payload["state"] == "disabled":
+                logging.info("WakeupAlert: DISABLED")
+                self.wakeup_alert_active = False
+            else:
+                logging.fatal(f"Unknown wakeup alert state received: {payload['state']}")
         else:
             logging.warning(f"Unknown topic: {message.topic}")
 
@@ -94,6 +106,10 @@ class AlarmCommander:
             if self.alarm_active:
                 # TODO: also display on curse ui
                 self._buzz_all()
+            if not self.alarm_active and self.wakeup_alert_active:
+                # TODO: also display on curse ui
+                self._buzz_bedroom()
+                # TODO: blinking 7seg
 
     def _check_dpir(self):
         try:
@@ -193,10 +209,19 @@ class AlarmCommander:
         else:
             logging.info("Wrong password attempted!")
 
-    def attach_abz(self, abz_queue):
+    def attach_abz(self, abz_queue, bedroom=False):
+        if bedroom:
+            self.bedroom_abz_queue = abz_queue
         self.abz_queues.append(abz_queue)
 
     def _buzz_all(self):
         buzz = {"pitch": 440, "duration": 1.0}
         for abz_queue in self.abz_queues:
             abz_queue.put(buzz)
+
+    def _buzz_bedroom(self):
+        if not self.bedroom_abz_queue:
+            logging.fatal("Somehow no BB in AlarmCommander")
+            return
+        buzz = {"pitch": 440, "duration": 1.0}
+        self.bedroom_abz_queue.put(buzz)
