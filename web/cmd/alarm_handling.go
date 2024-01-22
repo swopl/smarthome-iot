@@ -46,6 +46,9 @@ func (pc *PersonCounter) handleNewPerson(client mqtt.Client, msg mqtt.Message) {
 
 func publishPeopleCount(client mqtt.Client, count int32) {
 	// TODO: check if this works, sending only i32...
+	if count < 0 {
+		count = 0
+	}
 	client.Publish("PeopleCount", 2, true, count)
 }
 
