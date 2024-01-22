@@ -5,9 +5,10 @@ from datetime import datetime
 
 
 class PIRComponent(Component):
-    def __init__(self, display_queue, settings, stop_event, publisher, alarm_queue):
+    def __init__(self, display_queue, settings, stop_event, publisher, alarm_queue, led_queue=None):
         super().__init__(display_queue, settings, stop_event, publisher)
         self.alarm_queue = alarm_queue
+        self.led_queue = led_queue
 
     def _run_simulated(self):
         pir_thread = threading.Thread(target=run_pir_simulator,
@@ -19,6 +20,8 @@ class PIRComponent(Component):
         t = datetime.now()
         self.display_queue.put({"timestamp": t, "code": code})
         self.alarm_queue.put(code)
+        if self.led_queue:
+            self.led_queue.put({"on": True, "time": 10})
         pir_payload = {
             "measurement": "Motion",
             "value": True

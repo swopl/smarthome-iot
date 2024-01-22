@@ -28,6 +28,13 @@
             "row": 4,
             "pin": 6
         },
+        "DL": {
+            "simulated": true,
+            "codename": "DL",
+            "type": "LED",
+            "row": 9,
+            "pin": 19
+        },
         "DPIR1": {
             "simulated": true,
             "codename": "DPIR1",
@@ -57,13 +64,6 @@
             "row": 8,
             "trig_pin": 23,
             "echo_pin": 24
-        },
-        "DL": {
-            "simulated": true,
-            "codename": "DL",
-            "type": "LED",
-            "row": 9,
-            "pin": 19
         },
         "DB": {
             "simulated": true,

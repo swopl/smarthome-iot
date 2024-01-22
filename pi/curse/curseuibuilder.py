@@ -44,7 +44,7 @@ class CurseUIBuilder:
         return DHTComponent(self.display_queues[key], component_settings, self.stop_event,
                             self.publishers[component_settings["type"]], command_queues)
 
-    def add_pir(self, key, component_settings):
+    def add_pir(self, key, component_settings, led_command_queue=None):
         self.display_queues[key] = LifoQueue()
         component_settings["runs_on"] = f"PI{self.running_pi}"
         self.row_templates[key] = (int(component_settings["row"]),
@@ -52,7 +52,8 @@ class CurseUIBuilder:
         door_pir = component_settings["codename"].startswith("D")  # We will assume others are Room pirs
         return PIRComponent(self.display_queues[key], component_settings, self.stop_event,
                             self.publishers[component_settings["type"]],
-                            self.alarm_commander.dpir_queue if door_pir else self.alarm_commander.rpir_queue)
+                            self.alarm_commander.dpir_queue if door_pir else self.alarm_commander.rpir_queue,
+                            led_command_queue)
 
     def add_ir_receiver(self, key, component_settings, rgb_command_queue):
         self.display_queues[key] = LifoQueue()

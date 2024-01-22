@@ -33,6 +33,7 @@ def main():
     ui_builder = CurseUIBuilder(running_pi)
     rgb = None
     lcd = None
+    led = None
     for key, component_settings in settings.items():
         device_type = component_settings["type"]
         if device_type == "DHT":
@@ -43,7 +44,11 @@ def main():
             else:
                 ui_builder.add_dht(key, component_settings).run(threads)
         elif device_type == "PIR":
-            ui_builder.add_pir(key, component_settings).run(threads)
+            # TODO: make not depend on order
+            if component_settings["codename"] == "DPIR1":
+                ui_builder.add_pir(key, component_settings, led.command_queue).run(threads)
+            else:
+                ui_builder.add_pir(key, component_settings).run(threads)
         elif device_type == "IR_RECEIVER":
             ui_builder.add_ir_receiver(key, component_settings, rgb.command_queue).run(threads)
         elif device_type == "BTN":
@@ -53,7 +58,8 @@ def main():
         elif device_type == "UDS":
             ui_builder.add_uds(key, component_settings).run(threads)
         elif device_type == "LED":
-            ui_builder.add_led(key, component_settings).run(threads)
+            led = ui_builder.add_led(key, component_settings)
+            led.run(threads)
         elif device_type == "RGB":
             rgb = ui_builder.add_rgb(key, component_settings)
             rgb.run(threads)
