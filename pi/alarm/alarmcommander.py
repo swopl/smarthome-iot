@@ -108,6 +108,7 @@ class AlarmCommander:
 
     def _check_button(self):
         # FIXME: this expects only one button per pi, should work for our examples
+        # FIXME: !!!!! this listens for opposite state to what it should listen to
         try:
             state = self.btn_queue.get(timeout=0.03)
         except Empty:
