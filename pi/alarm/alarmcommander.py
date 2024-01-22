@@ -39,12 +39,15 @@ class AlarmCommander:
         self.gyro_intensities = []
         self.uds_distances = []
         self.wakeup_alert_active = False
+        self.door_security_timer = None
 
     def _on_mqtt_connect(self, client, userdata, flags, rc):
         self.mqtt_client.subscribe("AlarmInfo")  # TODO: think about qos and others
         self.mqtt_client.subscribe("PeopleCount")  # TODO: think about qos and others
         self.mqtt_client.subscribe("WakeupAlert")
+        self.mqtt_client.subscribe("DoorSecuritySystem")
 
+    # TODO: make prettier
     def _process_message(self, client, userdata, message):
         payload = json.loads(message.payload.decode("utf-8"))
         if message.topic == "AlarmInfo":
@@ -68,6 +71,15 @@ class AlarmCommander:
                 self.wakeup_alert_active = False
             else:
                 logging.fatal(f"Unknown wakeup alert state received: {payload['state']}")
+        elif message.topic == "DoorSecuritySystem":
+            if payload["state"] == "enabled":
+                logging.info("DoorSecuritySystem: ENABLED")
+                self.door_security_active = True
+            elif payload["state"] == "disabled":
+                logging.info("DoorSecuritySystem: DISABLED")
+                self.door_security_active = False
+            else:
+                logging.fatal(f"Unknown door security state received: {payload['state']}")
         else:
             logging.warning(f"Unknown topic: {message.topic}")
 
@@ -77,6 +89,13 @@ class AlarmCommander:
             "runs_on": "TODO",  # TODO: add runs_on
             "reason": reason,
             "extra": extra,
+            "state": state
+        }), 2, True)
+
+    def _publish_door_security(self, state="enabled"):
+        self.mqtt_client.publish("AlarmInfo", json.dumps({
+            "time": datetime.utcnow().isoformat() + "Z",
+            "runs_on": "TODO",  # TODO: add runs_on
             "state": state
         }), 2, True)
 
@@ -103,6 +122,8 @@ class AlarmCommander:
             self._check_uds()
             self._check_dpir()
             self._check_rpir()
+            if not self.alarm_active and self.door_security_active:
+                self._check_button_high_alert()
             if self.alarm_active:
                 # TODO: also display on curse ui
                 self._buzz_all()
@@ -190,6 +211,12 @@ class AlarmCommander:
         if not state:
             self.btn_state = state
 
+    def _check_button_high_alert(self):
+        # FIXME: this expects only one button per pi, should work for our examples
+        if not self.btn_state:
+            logging.info("Alarm activating due to DS while Security system active...")
+            self._publish_alarm("SecDS", "Door sensor not pushed in while security system active")
+
     def _check_mbr(self):
         try:
             keys = self.mbr_queue.get(timeout=0.03)
@@ -200,9 +227,17 @@ class AlarmCommander:
             return
         password = keys[:-1]
         if password == self.security_system_password:
-            logging.info("MBR security system toggled")
-            # TODO: send to server so other pi knows
-            self.door_security_active = not self.door_security_active
+            if not self.door_security_active:
+                logging.info("MBR security system toggling in 10 seconds: ON")
+                self.door_security_timer = threading.Timer(10, lambda: self._publish_door_security("enabled"))
+                self.door_security_timer.start()
+            else:
+                logging.info("MBR security system toggled: OFF")
+                # TODO: potential weird behavior if somehow user enters password right when published enabled?
+                if self.door_security_timer:
+                    self.door_security_timer.cancel()  # should be safe to cancel even when finished
+                    self.door_security_timer = None
+                self._publish_door_security("disabled")
         elif password == self.alarm_password and self.alarm_active:
             logging.info("Disabling alarm...")
             self._publish_alarm("MBR", "Deactivated by password", "disabled")
