@@ -1,4 +1,5 @@
 import logging
+import queue
 import threading
 import RPi.GPIO as GPIO
 import time
@@ -19,12 +20,14 @@ class D47SEG:
            '8': (1, 1, 1, 1, 1, 1, 1),
            '9': (1, 1, 1, 1, 0, 1, 1)}
 
-    def __init__(self, pins_segments, pins_digits, code, stop_event, callback):
+    def __init__(self, pins_segments, pins_digits, code, stop_event, callback, blinking_queue):
         self.segments = pins_segments
         self.digits = pins_digits
         self.code = code
         self.stop_event = stop_event
         self.callback = callback
+        self.blinking_queue = blinking_queue
+        self.blinking = False
 
     def _setup(self):
         GPIO.setmode(GPIO.BCM)
@@ -47,17 +50,27 @@ class D47SEG:
                 break
             n = time.ctime()[11:13] + time.ctime()[14:16]
             s = str(n).rjust(4)
-            for digit in range(4):
-                for loop in range(0, 7):
-                    GPIO.output(self.segments[loop], self.num[s[digit]][loop])
-                    if (int(time.ctime()[18:19]) % 2 == 0) and (digit == 1):
-                        GPIO.output(25, 1)
-                    else:
-                        GPIO.output(25, 0)
-                GPIO.output(self.digits[digit], 0)
-                time.sleep(0.001)
-                GPIO.output(self.digits[digit], 1)
+            self._draw(s)
             self.callback(self.code, s)
+            # TODO: check if sleep is ok here, GPIO.output should keep outputting
+            if self.blinking:
+                time.sleep(0.5)
+                s = "    "
+                self._draw(s)
+                self.callback(self.code, s)
+                time.sleep(0.5)
+
+    def _draw(self, s):
+        for digit in range(4):
+            for loop in range(0, 7):
+                GPIO.output(self.segments[loop], self.num[s[digit]][loop])
+                if (int(time.ctime()[18:19]) % 2 == 0) and (digit == 1):
+                    GPIO.output(25, 1)
+                else:
+                    GPIO.output(25, 0)
+            GPIO.output(self.digits[digit], 0)
+            time.sleep(0.001)
+            GPIO.output(self.digits[digit], 1)
 
     def _stop(self):
         pass

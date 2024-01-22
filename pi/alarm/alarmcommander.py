@@ -24,6 +24,7 @@ class AlarmCommander:
         self.uds_queue = Queue()
         self.dpir_queue = Queue()
         self.rpir_queue = Queue()
+        self.d47seg_blinking_queue = Queue()
         self.btn_state = False
         self.when_btn_pressed = datetime.now()
         self.alarm_active = False
@@ -66,9 +67,11 @@ class AlarmCommander:
             if payload["state"] == "enabled":
                 logging.info("WakeupAlert: ENABLED")
                 self.wakeup_alert_active = True
+                self.d47seg_blinking_queue.put(True)
             elif payload["state"] == "disabled":
                 logging.info("WakeupAlert: DISABLED")
                 self.wakeup_alert_active = False
+                self.d47seg_blinking_queue.put(False)
             else:
                 logging.fatal(f"Unknown wakeup alert state received: {payload['state']}")
         elif message.topic == "DoorSecuritySystem":
@@ -129,8 +132,8 @@ class AlarmCommander:
                 self._buzz_all()
             if not self.alarm_active and self.wakeup_alert_active:
                 # TODO: also display on curse ui
+                # blinking is activated/deactivated in processing message, since it is state
                 self._buzz_bedroom()
-                # TODO: blinking 7seg
 
     def _check_dpir(self):
         try:
