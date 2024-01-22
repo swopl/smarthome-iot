@@ -93,7 +93,7 @@ class AlarmCommander:
         }), 2, True)
 
     def _publish_door_security(self, state="enabled"):
-        self.mqtt_client.publish("AlarmInfo", json.dumps({
+        self.mqtt_client.publish("DoorSecuritySystem", json.dumps({
             "time": datetime.utcnow().isoformat() + "Z",
             "runs_on": "TODO",  # TODO: add runs_on
             "state": state
