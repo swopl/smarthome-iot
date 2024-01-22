@@ -21,6 +21,8 @@ class AlarmCommander:
         self.mbr_queue = Queue()
         self.gyro_queue = Queue()
         self.uds_queue = Queue()
+        self.dpir_queue = Queue()
+        self.rpir_queue = Queue()
         self.btn_state = False
         self.when_btn_pressed = datetime.now()
         self.alarm_active = False
@@ -53,7 +55,7 @@ class AlarmCommander:
                 logging.fatal(f"Unknown alarm state received: {payload['state']}")
         elif message.topic == "PeopleCount":
             logging.info(f"Received PeopleCount payload: {payload}")
-            self.person_count = payload  # TODO: test
+            self.person_count = int(payload)  # TODO: test
         else:
             logging.warning(f"Unknown topic: {message.topic}")
 
@@ -64,6 +66,13 @@ class AlarmCommander:
             "reason": reason,
             "extra": extra,
             "state": state
+        }), 2, True)
+
+    def _publish_people_change(self, incrementing):
+        self.mqtt_client.publish("PeopleDetection", json.dumps({
+            "time": datetime.utcnow().isoformat() + "Z",
+            "runs_on": "TODO",  # TODO: add runs_on
+            "incrementing": incrementing,
         }), 2, True)
 
     def activate(self) -> threading.Thread:
@@ -80,9 +89,39 @@ class AlarmCommander:
             self._check_button()
             self._check_gyro()
             self._check_uds()
+            self._check_dpir()
+            self._check_rpir()
             if self.alarm_active:
                 # TODO: also display on curse ui
                 self._buzz_all()
+
+    def _check_dpir(self):
+        try:
+            self.dpir_queue.get(timeout=0.03)
+        except Empty:
+            return
+        # if too little values, wait a bit longer
+        if len(self.uds_distances) <= 5:
+            return
+        movement = self.uds_distances[-1] - self.uds_distances[0]
+        # TODO: experiment with movement numbers
+        if movement < -10:
+            logging.info("Sending person entering...")
+            self._publish_people_change(True)
+        elif movement > 10:
+            logging.info("Sending person exiting...")
+            self._publish_people_change(False)
+        else:
+            logging.warning("There was quite a bit of movement, but somehow not entering or exiting")
+
+    def _check_rpir(self):
+        try:
+            code = self.rpir_queue.get(timeout=0.03)
+        except Empty:
+            return
+        if not self.alarm_active and self.person_count == 0:
+            logging.info(f"Alarm activating due to RPIR: {code}...")
+            self._publish_alarm("RPIR", f"No people present, but RPIR: {code} detected someone")
 
     def _check_uds(self):
         # FIXME: this expects only one uds per pi, should work for our examples
