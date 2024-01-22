@@ -170,7 +170,7 @@ class AlarmCommander:
         except Empty:
             return
         self.uds_distances.append(distance)  # TODO: do i need datetime for better calcs?
-        self.uds_distances = self.uds_distances[-16:]
+        self.uds_distances = self.uds_distances[-32:]
 
     def _calculate_gyro_movement(self):
         # assuming every gyro comes in similar deltas
