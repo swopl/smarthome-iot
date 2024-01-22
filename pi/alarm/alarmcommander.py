@@ -25,8 +25,8 @@ class AlarmCommander:
         self.dpir_queue = Queue()
         self.rpir_queue = Queue()
         self.d47seg_blinking_queue = Queue()
-        self.btn_state = False
-        self.when_btn_pressed = datetime.now()
+        self.btn_pushed_in = False
+        self.when_btn_released = datetime.now()
         self.alarm_active = False
         self.door_security_active = False
         self.security_system_password = "1234"  # TODO: actually extract to secret
@@ -199,24 +199,22 @@ class AlarmCommander:
 
     def _check_button(self):
         # FIXME: this expects only one button per pi, should work for our examples
-        # FIXME: !!!!! this listens for opposite state to what it should listen to
         try:
-            state = self.btn_queue.get(timeout=0.03)
+            newly_pushed_in = self.btn_queue.get(timeout=0.03)
         except Empty:
             return
-        if not self.btn_state and state:
-            self.btn_state = state
-            self.when_btn_pressed = datetime.now()
+        if self.btn_pushed_in and not newly_pushed_in:
+            self.btn_pushed_in = False
+            self.when_btn_released = datetime.now()
         if (not self.alarm_active and
-                self.btn_state and datetime.now() - self.when_btn_pressed >= timedelta(seconds=5)):
+                not self.btn_pushed_in and datetime.now() - self.when_btn_released >= timedelta(seconds=5)):
             logging.info("Alarm activating due to DS...")
-            self._publish_alarm("DS", "Door sensor pushed in for longer than 5 seconds")
-        if not state:
-            self.btn_state = state
+            self._publish_alarm("DS", "Door sensor released for longer than 5 seconds")
+        self.btn_pushed_in = newly_pushed_in
 
     def _check_button_high_alert(self):
         # FIXME: this expects only one button per pi, should work for our examples
-        if not self.btn_state:
+        if not self.btn_pushed_in:
             logging.info("Alarm activating due to DS while Security system active...")
             self._publish_alarm("SecDS", "Door sensor not pushed in while security system active")
 
