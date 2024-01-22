@@ -87,7 +87,7 @@ class CurseUIBuilder:
         self.row_templates[key] = (int(component_settings["row"]),
                                    "{code:10} at {timestamp} | Distance: {distance:> 7}")
         return UDSComponent(self.display_queues[key], component_settings, self.stop_event,
-                            self.publishers[component_settings["type"]])
+                            self.publishers[component_settings["type"]], self.alarm_commander.uds_queue)
 
     def add_led(self, key, component_settings):
         self.display_queues[key] = LifoQueue()

@@ -5,6 +5,10 @@ from datetime import datetime
 
 
 class UDSComponent(Component):
+    def __init__(self, display_queue, settings, stop_event, publisher, alarm_queue):
+        super().__init__(display_queue, settings, stop_event, publisher)
+        self.alarm_queue = alarm_queue
+
     def _run_simulated(self):
         uds_thread = threading.Thread(target=run_uds_simulator,
                                       args=(self._callback, self.stop_event, self.settings['codename']))
@@ -14,6 +18,7 @@ class UDSComponent(Component):
     def _callback(self, code, distance):
         t = datetime.now()
         self.display_queue.put({"timestamp": t, "code": code, "distance": distance})
+        self.alarm_queue.put(distance)
         uds_payload = {
             "measurement": "Distance",
             "value": distance

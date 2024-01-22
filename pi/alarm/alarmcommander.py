@@ -20,6 +20,7 @@ class AlarmCommander:
         self.btn_queue = Queue()
         self.mbr_queue = Queue()
         self.gyro_queue = Queue()
+        self.uds_queue = Queue()
         self.btn_state = False
         self.when_btn_pressed = datetime.now()
         self.alarm_active = False
@@ -33,6 +34,7 @@ class AlarmCommander:
         self.mqtt_client.on_connect = self._on_mqtt_connect
         self.mqtt_client.on_message = self._process_message
         self.gyro_intensities = []
+        self.uds_distances = []
 
     def _on_mqtt_connect(self, client, userdata, flags, rc):
         self.mqtt_client.subscribe("AlarmInfo")  # TODO: think about qos and others
@@ -77,9 +79,19 @@ class AlarmCommander:
             self._check_mbr()
             self._check_button()
             self._check_gyro()
+            self._check_uds()
             if self.alarm_active:
                 # TODO: also display on curse ui
                 self._buzz_all()
+
+    def _check_uds(self):
+        # FIXME: this expects only one uds per pi, should work for our examples
+        try:
+            distance = self.uds_queue.get(timeout=0.03)
+        except Empty:
+            return
+        self.uds_distances.append(distance)  # TODO: do i need datetime for better calcs?
+        self.uds_distances = self.uds_distances[-16:]
 
     def _calculate_gyro_movement(self):
         # assuming every gyro comes in similar deltas
