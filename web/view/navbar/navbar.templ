@@ -1,7 +1,17 @@
 package navbar
 
 templ Navbar() {
-    <div>
-        <h3>Navbar</h3>
-    </div>
+    <nav>
+        <ul>
+            <li style="margin-left: 1em">Smarthome IOT</li>
+        </ul>
+        <ul style="margin-right: 1em">
+            <li style="margin-left: 0.5em"><a href="#" hx-get="/wakeup" hx-target="main">Wakeup Alerts</a></li>
+            <li style="margin-left: 0.5em"><a href="#" hx-get="/alarm" hx-target="main">Alarms</a></li>
+            <li style="margin-left: 0.5em"><a href="#" hx-get="/pi1" hx-target="main">PI1 Dashboard</a></li>
+            <li style="margin-left: 0.5em"><a href="#" hx-get="/pi2" hx-target="main">PI2 Dashboard</a></li>
+            <li style="margin-left: 0.5em"><a href="#" hx-get="/pi3" hx-target="main">PI3 Dashboard</a></li>
+            <li style="margin-left: 0.5em"><a href="#" hx-get="/rgb" hx-target="main">RGB Colors</a></li>
+        </ul>
+    </nav>
 }

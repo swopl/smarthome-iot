@@ -52,5 +52,6 @@ func main() {
 	e := echo.New()
 	homeHandler := handler.HomeHandler{DB: db}
 	e.GET("/", homeHandler.HandleHomeShow)
+	e.GET("/pi1", handler.HandlePI1)
 	e.Logger.Fatal(e.Start(":1323"))
 }
