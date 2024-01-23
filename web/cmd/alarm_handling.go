@@ -98,7 +98,7 @@ func handleNewAlarmInfo(client mqtt.Client, msg mqtt.Message) {
 		SetTime(alarm.Time).
 		AddTag("runs_on", alarm.RunsOn).
 		AddTag("state", alarm.State).
-		AddField("reason", alarm.Reason).
+		AddTag("reason", alarm.Reason).
 		AddField("extra", alarm.Extra)
 	err = writeAPI.WritePoint(context.Background(), p)
 	if err != nil {
