@@ -31,7 +31,6 @@ def main():
     settings = load_settings()[f"PI{running_pi}"]
     threads = []
     ui_builder = CurseUIBuilder(running_pi)
-    rgb = None
     lcd = None
     led = None
     for key, component_settings in settings.items():
@@ -50,7 +49,7 @@ def main():
             else:
                 ui_builder.add_pir(key, component_settings).run(threads)
         elif device_type == "IR_RECEIVER":
-            ui_builder.add_ir_receiver(key, component_settings, rgb.command_queue).run(threads)
+            ui_builder.add_ir_receiver(key, component_settings).run(threads)
         elif device_type == "BTN":
             ui_builder.add_btn(key, component_settings).run(threads)
         elif device_type == "MBR":
@@ -61,8 +60,7 @@ def main():
             led = ui_builder.add_led(key, component_settings)
             led.run(threads)
         elif device_type == "RGB":
-            rgb = ui_builder.add_rgb(key, component_settings)
-            rgb.run(threads)
+            ui_builder.add_rgb(key, component_settings).run(threads)
         elif device_type == "ABZ":
             ui_builder.add_abz(key, component_settings).run(threads)
         elif device_type == "GYRO":

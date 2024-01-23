@@ -5,20 +5,9 @@ from datetime import datetime
 
 
 class IRReceiverComponent(Component):
-    def __init__(self, display_queue, settings, stop_event, publisher, rgb_command_queue, on_color=(1, 1, 1)):
+    def __init__(self, display_queue, settings, stop_event, publisher, colorizer_queue):
         super().__init__(display_queue, settings, stop_event, publisher)
-        self.rgb_command_queue = rgb_command_queue
-        self.on_color = on_color
-
-    def decode_color(self, message: str):
-        if message == "0":
-            return 0, 0, 0
-        if message == "8":
-            return self.on_color
-        if message.isdigit():
-            num = int(message)
-            self.on_color = (num >> 2) % 2, (num >> 1) % 2, num % 2
-            return self.on_color
+        self.colorizer_queue = colorizer_queue
 
     def _run_simulated(self):
         ir_thread = threading.Thread(target=run_ir_receiver_simulator,
@@ -34,10 +23,8 @@ class IRReceiverComponent(Component):
             "value": message
         }
         self.publisher.add_to_batch([ir_payload], ["IRReceiver"], self.settings)
-        color = self.decode_color(message)
-        # TODO: allow web server to do same thing
-        if color:
-            self.rgb_command_queue.put(color)
+        if message.isdigit() and 0 <= int(message) <= 8 and self.colorizer_queue:
+            self.colorizer_queue.put(int(message))
 
     def _run_real(self):
         from sensors.ir_receiver import run_ir_receiver_loop, IRReceiver

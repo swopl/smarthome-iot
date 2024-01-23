@@ -16,6 +16,7 @@ from components.rgb import RGBComponent
 from components.uds import UDSComponent
 from curse.commander import CurseCommandBuilder
 from curse.curseui import CurseUI
+from exterior_interacting.rgb_colorizer import RGBColorizer
 
 
 class CurseUIBuilder:
@@ -28,6 +29,7 @@ class CurseUIBuilder:
         self.publishers = PublisherDict()
         self.running_pi = running_pi
         self.alarm_commander = AlarmCommander(self.stop_event)
+        self.rgb_colorizer = RGBColorizer(self.stop_event)
 
     def build(self):
         return (CurseUI(self.display_queues, self.row_templates, self.command_queues,
@@ -55,14 +57,14 @@ class CurseUIBuilder:
                             self.alarm_commander.dpir_queue if door_pir else self.alarm_commander.rpir_queue,
                             led_command_queue)
 
-    def add_ir_receiver(self, key, component_settings, rgb_command_queue):
+    def add_ir_receiver(self, key, component_settings):
         self.display_queues[key] = LifoQueue()
         component_settings["runs_on"] = f"PI{self.running_pi}"
         self.row_templates[key] = (int(component_settings["row"]),
                                    "{code:10} at {timestamp} | IR Received {message:>6}")
         return IRReceiverComponent(self.display_queues[key], component_settings, self.stop_event,
                                    self.publishers[component_settings["type"]],
-                                   rgb_command_queue)
+                                   self.rgb_colorizer.colorization_queue)
 
     def add_btn(self, key, component_settings):
         self.display_queues[key] = LifoQueue()
@@ -120,6 +122,7 @@ class CurseUIBuilder:
         self.display_queues[key] = LifoQueue()
         component_settings["runs_on"] = f"PI{self.running_pi}"
         self.command_queues[key] = Queue()
+        self.rgb_colorizer.attach_rgb_command_queue(self.command_queues[key])
         self.row_templates[key] = (int(component_settings["row"]),
                                    "{code:10} at {timestamp} | RGB colors: {color}")
         self.command_builder.add_rgb(key)
