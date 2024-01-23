@@ -257,7 +257,6 @@ class AlarmCommander:
 
     def _buzz_bedroom(self):
         if not self.bedroom_abz_queue:
-            logging.fatal("Somehow no BB in AlarmCommander")
             return
         buzz = {"pitch": 440, "duration": 1.0}
         self.bedroom_abz_queue.put(buzz)
