@@ -53,5 +53,6 @@ func main() {
 	homeHandler := handler.HomeHandler{DB: db}
 	e.GET("/", homeHandler.HandleHomeShow)
 	e.GET("/pi1", handler.HandlePI1)
+	e.GET("/alarm", handler.HandleAlarm)
 	e.Logger.Fatal(e.Start(":1323"))
 }
