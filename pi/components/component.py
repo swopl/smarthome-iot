@@ -2,7 +2,7 @@ import logging
 import threading
 from abc import abstractmethod
 
-from components.publisher.publisher import Publisher
+from exterior_interacting.publisher.publisher import Publisher
 
 
 class Component:

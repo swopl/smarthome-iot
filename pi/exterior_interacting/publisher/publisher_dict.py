@@ -1,5 +1,5 @@
 from collections import defaultdict
-from components.publisher.publisher import Publisher
+from exterior_interacting.publisher.publisher import Publisher
 
 
 class PublisherDict(defaultdict):

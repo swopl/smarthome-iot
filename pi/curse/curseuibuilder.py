@@ -1,6 +1,6 @@
 import threading
 from queue import LifoQueue, Queue
-from alarm.alarmcommander import AlarmCommander
+from exterior_interacting.alarmcommander import AlarmCommander
 from components.abz import ABZComponent
 from components.btn import BTNComponent
 from components.d47seg import D47SEGComponent
@@ -11,7 +11,7 @@ from components.lcd import LCDComponent
 from components.led import LEDComponent
 from components.mbr import MBRComponent
 from components.pir import PIRComponent
-from components.publisher.publisher_dict import PublisherDict
+from exterior_interacting.publisher.publisher_dict import PublisherDict
 from components.rgb import RGBComponent
 from components.uds import UDSComponent
 from curse.commander import CurseCommandBuilder
