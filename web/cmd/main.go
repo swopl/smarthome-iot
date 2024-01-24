@@ -14,11 +14,12 @@ import (
 )
 
 var schema = `
-DROP TABLE IF EXISTS alarm_clock;
-CREATE TABLE alarm_clock (
+DROP TABLE IF EXISTS wakeup_alert;
+CREATE TABLE wakeup_alert (
 	id integer PRIMARY KEY,
 	name text,
-	enabled integer
+	cron text,
+	enabled boolean
 );`
 
 func main() {
@@ -51,8 +52,10 @@ func main() {
 
 	e := echo.New()
 	homeHandler := handler.HomeHandler{DB: db}
+	dbAccessor := DBAccessor{DB: db}
 	e.GET("/", homeHandler.HandleHomeShow)
 	e.GET("/pi1", handler.HandlePI1)
 	e.GET("/alarm", handler.HandleAlarm)
+	e.POST("/wakeup", dbAccessor.NewWakeupAlert)
 	e.Logger.Fatal(e.Start(":1323"))
 }
