@@ -14,9 +14,9 @@ import (
 )
 
 type PersonData struct {
-	Time     time.Time
-	Entering bool
-	Leaving  bool
+	Time         time.Time
+	RunsOn       string `json:"runs_on"` // TODO: do i need this json meta?
+	Incrementing bool
 }
 
 type PersonCounter struct {
@@ -35,9 +35,9 @@ func (pc *PersonCounter) handleNewPerson(client mqtt.Client, msg mqtt.Message) {
 	}
 	fmt.Print("Unmarshalled: ")
 	fmt.Println(data)
-	if data.Entering {
+	if data.Incrementing {
 		pc.Present.Add(1)
-	} else if data.Leaving {
+	} else {
 		pc.Present.Add(-1)
 	}
 	go publishPeopleCount(client, pc.Present.Load())
@@ -73,7 +73,7 @@ type AlarmInfo struct {
 	State  string
 }
 
-func handleNewAlarmInfo(client mqtt.Client, msg mqtt.Message) {
+func handleNewAlarmInfo(_ mqtt.Client, msg mqtt.Message) {
 	fmt.Printf("\nTOPIC: %s\n", msg.Topic())
 	fmt.Printf("MSG: %s\n", msg.Payload())
 	decoder := json.NewDecoder(bytes.NewReader(msg.Payload()))
