@@ -54,17 +54,19 @@ func main() {
 	subscribeToPeopleDetection(client)
 	subscribeToAlarmInfo(client)
 
-	e := echo.New()
 	homeHandler := handler.HomeHandler{DB: db}
 	cr := cron.New()
 	dbAccessor := wakeup.DBAccessor{
-		DB:   db,
-		Cron: cr,
-		Mqtt: &wakeup.MQTTAccessor{Client: client},
+		DB:                db,
+		Cron:              cr,
+		Mqtt:              &wakeup.MQTTAccessor{Client: client},
+		WakeupAlertActive: make(chan bool),
 	}
+	dbAccessor.SubscribeToWakeupAlert(client)
 	wakeupAlertHandler := handler.WakeupHandler{DB: db}
 	cr.Start()
 	dbAccessor.ActivateAllCronWakeupAlerts()
+	e := echo.New()
 	e.GET("/", homeHandler.HandleHomeShow)
 	e.GET("/pi1", handler.HandlePI1)
 	e.GET("/alarm", handler.HandleAlarm)

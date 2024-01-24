@@ -1,6 +1,8 @@
 package wakeup
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/jmoiron/sqlx"
@@ -23,9 +25,10 @@ type MQTTAccessor struct {
 }
 
 type DBAccessor struct {
-	DB   *sqlx.DB
-	Cron *cron.Cron
-	Mqtt *MQTTAccessor
+	DB                *sqlx.DB
+	Cron              *cron.Cron
+	Mqtt              *MQTTAccessor
+	WakeupAlertActive chan bool
 }
 
 type AlertDTO struct {
@@ -34,6 +37,7 @@ type AlertDTO struct {
 }
 
 type DoorSecurityInfo struct {
+	// TODO: rename, this is also for alert enable/disable
 	Time   time.Time
 	RunsOn string `json:"runs_on"` // TODO: do i need this json meta?
 	State  string
@@ -41,11 +45,14 @@ type DoorSecurityInfo struct {
 
 func (mqtt *MQTTAccessor) publishActivateWakeupAlert() {
 	log.Println("Activating wakeup")
-	mqtt.Client.Publish("WakeupAlert", 2, true, DoorSecurityInfo{
+	token := mqtt.Client.Publish("WakeupAlert", 2, true, DoorSecurityInfo{
 		Time:   time.Now().UTC(),
 		RunsOn: "SERVER",
 		State:  "enabled",
 	})
+	if token.Wait() && token.Error() != nil {
+		log.Println("Error publishing WA:", token.Error())
+	}
 }
 
 // TODO: pass into echo instead, but complicated
@@ -108,6 +115,31 @@ func (dba *DBAccessor) ActivateAllCronWakeupAlerts() {
 		_, err := dba.Cron.AddFunc(alert.Cron, dba.Mqtt.publishActivateWakeupAlert)
 		if err != nil {
 			log.Fatalln(err)
+		}
+	}
+}
+
+func (dba *DBAccessor) handleNewWakeupAlert(_ mqtt.Client, msg mqtt.Message) {
+	fmt.Println("handleNewWakeupAlert")
+	decoder := json.NewDecoder(bytes.NewReader(msg.Payload()))
+	var alert DoorSecurityInfo
+	err := decoder.Decode(&alert)
+	if err != nil {
+		log.Fatalln(err) // TODO: maybe not fatal here
+	}
+	fmt.Print("Unmarshalled: ")
+	fmt.Println(alert)
+	dba.WakeupAlertActive <- alert.State == "enabled"
+}
+
+func (dba *DBAccessor) SubscribeToWakeupAlert(client mqtt.Client) {
+	topics := []string{
+		"WakeupAlert",
+	}
+	// TODO: check what qos means in subscribe
+	for _, topic := range topics {
+		if token := client.Subscribe(topic, 0, dba.handleNewWakeupAlert); token.Wait() && token.Error() != nil {
+			log.Fatalln(token.Error())
 		}
 	}
 }
