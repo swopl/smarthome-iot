@@ -11,6 +11,7 @@ import (
 	_ "modernc.org/sqlite"
 	"os"
 	"path/filepath"
+	"smarthome-back/cmd/wakeup"
 	"smarthome-back/handler"
 )
 
@@ -21,7 +22,9 @@ CREATE TABLE wakeup_alert (
 	name text,
 	cron text,
 	enabled boolean
-);`
+);
+
+INSERT INTO wakeup_alert (name, cron, enabled) VALUES ('MyAlert', '*/5 * * * *', true);`
 
 func main() {
 	err := godotenv.Load("./secret.env")
@@ -54,16 +57,18 @@ func main() {
 	e := echo.New()
 	homeHandler := handler.HomeHandler{DB: db}
 	cr := cron.New()
-	dbAccessor := DBAccessor{
+	dbAccessor := wakeup.DBAccessor{
 		DB:   db,
 		Cron: cr,
-		Mqtt: &MQTTAccessor{Client: client},
+		Mqtt: &wakeup.MQTTAccessor{Client: client},
 	}
+	wakeupAlertHandler := handler.WakeupHandler{DB: db}
 	cr.Start()
 	dbAccessor.ActivateAllCronWakeupAlerts()
 	e.GET("/", homeHandler.HandleHomeShow)
 	e.GET("/pi1", handler.HandlePI1)
 	e.GET("/alarm", handler.HandleAlarm)
 	e.POST("/wakeup", dbAccessor.NewWakeupAlert)
+	e.GET("/wakeup", wakeupAlertHandler.HandleWakeupAlert)
 	e.Logger.Fatal(e.Start(":1323"))
 }

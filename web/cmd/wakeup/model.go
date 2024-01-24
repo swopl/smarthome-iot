@@ -1,4 +1,4 @@
-package main
+package wakeup
 
 import (
 	"fmt"
@@ -11,20 +11,26 @@ import (
 	"time"
 )
 
-type WakeupAlert struct {
+type Alert struct {
 	Id      int64
 	Name    string
 	Cron    string
 	Enabled bool
 }
 
-type WakeupAlertDTO struct {
-	Name string
-	Cron string
-}
-
 type MQTTAccessor struct {
 	Client mqtt.Client
+}
+
+type DBAccessor struct {
+	DB   *sqlx.DB
+	Cron *cron.Cron
+	Mqtt *MQTTAccessor
+}
+
+type AlertDTO struct {
+	Name string
+	Cron string
 }
 
 type DoorSecurityInfo struct {
@@ -51,16 +57,10 @@ func (mqtt *MQTTAccessor) publishDeactivateWakeupAlert() {
 	})
 }
 
-type DBAccessor struct {
-	DB   *sqlx.DB
-	Cron *cron.Cron
-	Mqtt *MQTTAccessor
-}
-
 // TODO: pass into echo instead, but complicated
 
 func (dba *DBAccessor) NewWakeupAlert(c echo.Context) error {
-	waDto := new(WakeupAlertDTO)
+	waDto := new(AlertDTO)
 	if err := c.Bind(waDto); err != nil {
 		// TODO: don't send error to client
 		return c.String(http.StatusBadRequest, err.Error())
@@ -78,7 +78,7 @@ func (dba *DBAccessor) NewWakeupAlert(c echo.Context) error {
 }
 
 func (dba *DBAccessor) ActivateAllCronWakeupAlerts() {
-	var wakeupAlerts []WakeupAlert
+	var wakeupAlerts []Alert
 	err := dba.DB.Select(&wakeupAlerts, "SELECT * FROM wakeup_alert")
 	if err != nil {
 		log.Fatalln(err)

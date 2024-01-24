@@ -1,0 +1,21 @@
+package view
+
+import "smarthome-back/cmd/wakeup"
+
+templ WakeupAlert(wakeupAlert wakeup.Alert) {
+    <form class="container" hx-post="/wakeup" hx-swap="none">
+      <div class="grid">
+        <label for="name">
+          Name
+          <input type="text" id="name" name="name" placeholder="Name" required value={ wakeupAlert.Name }/>
+        </label>
+
+        <label for="cron">
+          Cron
+          <input type="text" id="cron" name="cron" placeholder="e.g. * * * * *" required value={ wakeupAlert.Cron }/>
+        </label>
+
+      </div>
+      <button type="submit">Change</button>
+    </form>
+}
