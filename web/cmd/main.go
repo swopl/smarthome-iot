@@ -5,6 +5,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
+	"github.com/robfig/cron/v3"
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
 	"log"
 	_ "modernc.org/sqlite"
@@ -52,7 +53,13 @@ func main() {
 
 	e := echo.New()
 	homeHandler := handler.HomeHandler{DB: db}
-	dbAccessor := DBAccessor{DB: db}
+	cr := cron.New()
+	dbAccessor := DBAccessor{
+		DB:   db,
+		Cron: cr,
+		Mqtt: &MQTTAccessor{Client: client},
+	}
+	cr.Start()
 	e.GET("/", homeHandler.HandleHomeShow)
 	e.GET("/pi1", handler.HandlePI1)
 	e.GET("/alarm", handler.HandleAlarm)

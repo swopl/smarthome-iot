@@ -9,6 +9,7 @@ require (
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.11.4
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/tursodatabase/libsql-client-go v0.0.0-20231216154754-8383a53d618f
 	modernc.org/sqlite v1.28.0
 )
