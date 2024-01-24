@@ -44,12 +44,18 @@ type DoorSecurityInfo struct {
 }
 
 func (mqtt *MQTTAccessor) publishActivateWakeupAlert() {
-	log.Println("Activating wakeup")
-	token := mqtt.Client.Publish("WakeupAlert", 2, true, DoorSecurityInfo{
+	log.Println("Publishing wakeup")
+	var output bytes.Buffer
+	encoder := json.NewEncoder(&output)
+	err := encoder.Encode(DoorSecurityInfo{
 		Time:   time.Now().UTC(),
 		RunsOn: "SERVER",
 		State:  "enabled",
 	})
+	if err != nil {
+		log.Println("Error unmarshal pub WA:", err)
+	}
+	token := mqtt.Client.Publish("WakeupAlert", 2, true, output)
 	if token.Wait() && token.Error() != nil {
 		log.Println("Error publishing WA:", token.Error())
 	}
