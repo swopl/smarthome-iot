@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"smarthome-back/cmd/wakeup"
 	"smarthome-back/handler"
+	"sync"
 )
 
 var schema = `
@@ -56,11 +57,13 @@ func main() {
 
 	homeHandler := handler.HomeHandler{DB: db}
 	cr := cron.New()
+	waa := false
 	dbAccessor := wakeup.DBAccessor{
 		DB:                db,
 		Cron:              cr,
 		Mqtt:              &wakeup.MQTTAccessor{Client: client},
-		WakeupAlertActive: make(chan bool),
+		WakeupAlertActive: &waa,
+		WakeupAlertMutex:  &sync.Mutex{},
 	}
 	dbAccessor.SubscribeToWakeupAlert(client)
 	wakeupAlertHandler := handler.WakeupHandler{DB: db}
@@ -73,5 +76,6 @@ func main() {
 	e.POST("/wakeup", dbAccessor.NewWakeupAlert)
 	e.GET("/wakeup", wakeupAlertHandler.HandleWakeupAlert)
 	e.GET("/socket/wakeup", dbAccessor.Status)
+	e.POST("/wakeup/deactivate", dbAccessor.PublishDeactivateWakeup)
 	e.Logger.Fatal(e.Start(":1323"))
 }

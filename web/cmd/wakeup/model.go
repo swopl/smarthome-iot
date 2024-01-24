@@ -10,6 +10,7 @@ import (
 	"github.com/robfig/cron/v3"
 	"log"
 	"net/http"
+	"sync"
 	"time"
 )
 
@@ -28,7 +29,8 @@ type DBAccessor struct {
 	DB                *sqlx.DB
 	Cron              *cron.Cron
 	Mqtt              *MQTTAccessor
-	WakeupAlertActive chan bool
+	WakeupAlertActive *bool
+	WakeupAlertMutex  *sync.Mutex
 }
 
 type AlertDTO struct {
@@ -135,7 +137,9 @@ func (dba *DBAccessor) handleNewWakeupAlert(_ mqtt.Client, msg mqtt.Message) {
 	}
 	fmt.Print("Unmarshalled: ")
 	fmt.Println(alert)
-	dba.WakeupAlertActive <- alert.State == "enabled"
+	dba.WakeupAlertMutex.Lock()
+	defer dba.WakeupAlertMutex.Unlock()
+	*dba.WakeupAlertActive = alert.State == "enabled"
 }
 
 func (dba *DBAccessor) SubscribeToWakeupAlert(client mqtt.Client) {

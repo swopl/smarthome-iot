@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"golang.org/x/net/websocket"
 	"log"
-	"sync"
+	"net/http"
 	"time"
 )
 
@@ -29,42 +29,30 @@ func (mqtt *MQTTAccessor) publishDeactivateWakeupAlert() {
 	}
 }
 
-func sendStatus(c echo.Context, ws *websocket.Conn, waActive <-chan bool, group *sync.WaitGroup) {
-	group.Add(1)
-	for {
-		alertActive := <-waActive
-		text := "INACTIVE"
-		if alertActive {
-			text = "ACTIVE"
-		}
-		err := websocket.Message.Send(ws, fmt.Sprintf(
-			"<span id=\"status\" hx-swap-oob=\"outerHTML\">%s</span>", text))
-		if err != nil {
-			c.Logger().Error(err)
-			break
-		}
-	}
-	group.Done()
+func (dba *DBAccessor) PublishDeactivateWakeup(c echo.Context) error {
+	fmt.Println("PUBLISH DEACTIVATE")
+	dba.Mqtt.publishDeactivateWakeupAlert()
+	return c.NoContent(http.StatusOK)
 }
 
 func (dba *DBAccessor) Status(c echo.Context) error {
 	websocket.Handler(func(ws *websocket.Conn) {
 		defer ws.Close() // TODO: safe to defer when used in goroutine?
-		var group sync.WaitGroup
-		go sendStatus(c, ws, dba.WakeupAlertActive, &group)
-		group.Add(1)
 		for {
-			msg := ""
-			err := websocket.Message.Receive(ws, &msg)
+			dba.WakeupAlertMutex.Lock()
+			text := "INACTIVE"
+			if *dba.WakeupAlertActive {
+				text = "ACTIVE"
+			}
+			dba.WakeupAlertMutex.Unlock()
+			err := websocket.Message.Send(ws, fmt.Sprintf(
+				"<span id=\"status\" hx-swap-oob=\"outerHTML\">%s</span>", text))
 			if err != nil {
 				c.Logger().Error(err)
-				break
+				return
 			}
-			dba.Mqtt.publishDeactivateWakeupAlert()
-			fmt.Printf("%s\n", msg)
+			time.Sleep(5 * time.Second) // TODO: do it better instead of sending every second
 		}
-		group.Done()
-		group.Wait()
 	}).ServeHTTP(c.Response(), c.Request())
 	return nil
 }
