@@ -29,8 +29,8 @@ type DBAccessor struct {
 }
 
 type AlertDTO struct {
-	Name string
-	Cron string
+	Name string `form:"name"`
+	Cron string `form:"cron"`
 }
 
 type DoorSecurityInfo struct {
@@ -60,20 +60,44 @@ func (mqtt *MQTTAccessor) publishDeactivateWakeupAlert() {
 // TODO: pass into echo instead, but complicated
 
 func (dba *DBAccessor) NewWakeupAlert(c echo.Context) error {
+	// FIXME: !!!! this function, if sometimes errors, will require restart to start cron again...
+	// TODO: don't also delete here...
 	waDto := new(AlertDTO)
 	if err := c.Bind(waDto); err != nil {
 		// TODO: don't send error to client
 		return c.String(http.StatusBadRequest, err.Error())
 	}
+	dba.Cron.Stop() // FIXME: is this thread safe?
 	_, err := dba.Cron.AddFunc(waDto.Cron, dba.Mqtt.publishActivateWakeupAlert)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, fmt.Sprint(err))
 	}
-	_, err = dba.DB.Exec("INSERT INTO wakeup_alert (name, cron, enabled) VALUES ($1, $2, $3)",
-		waDto.Name, waDto.Cron, true)
+	tx, err := dba.DB.Begin()
 	if err != nil {
 		return c.String(http.StatusInternalServerError, fmt.Sprint(err))
 	}
+	_, err = tx.Exec("DELETE FROM wakeup_alert") // this is intentional for now!
+	if err != nil {
+		err = tx.Rollback()
+		if err != nil {
+			return c.String(http.StatusInternalServerError, fmt.Sprint(err))
+		}
+		return c.String(http.StatusInternalServerError, fmt.Sprint(err))
+	}
+	_, err = tx.Exec("INSERT INTO wakeup_alert (name, cron, enabled) VALUES ($1, $2, $3)",
+		waDto.Name, waDto.Cron, true)
+	if err != nil {
+		err = tx.Rollback()
+		if err != nil {
+			return c.String(http.StatusInternalServerError, fmt.Sprint(err))
+		}
+		return c.String(http.StatusInternalServerError, fmt.Sprint(err))
+	}
+	err = tx.Commit()
+	if err != nil {
+		return c.String(http.StatusInternalServerError, fmt.Sprint(err))
+	}
+	dba.Cron.Start()
 	return c.NoContent(http.StatusNoContent)
 }
 
