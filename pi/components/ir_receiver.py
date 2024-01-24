@@ -23,7 +23,7 @@ class IRReceiverComponent(Component):
             "value": message
         }
         self.publisher.add_to_batch([ir_payload], ["IRReceiver"], self.settings)
-        if message.isdigit() and 0 <= int(message) <= 8 and self.colorizer_queue:
+        if message.isdigit() and 0 <= int(message) <= 7 and self.colorizer_queue:
             self.colorizer_queue.put(int(message))
 
     def _run_real(self):

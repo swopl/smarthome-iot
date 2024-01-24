@@ -35,10 +35,6 @@ class RGBColorizer:
         return colorizer_thread
 
     def decode_color(self, color_num: int):
-        if color_num == 0:
-            return 0, 0, 0
-        if color_num == 8:
-            return self.on_color
         self.on_color = (color_num >> 2) % 2, (color_num >> 1) % 2, color_num % 2
         return self.on_color
 
