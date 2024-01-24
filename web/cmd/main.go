@@ -53,7 +53,9 @@ func main() {
 	}
 	subscribeToAllTopics(client)
 	subscribeToPeopleDetection(client)
-	subscribeToAlarmInfo(client)
+	as := AlarmState{Active: new(bool), Mutex: new(sync.Mutex)}
+	alarmMqtt := MQTTAccessor{Client: &client}
+	as.subscribeToAlarmInfo(client)
 
 	homeHandler := handler.HomeHandler{DB: db}
 	cr := cron.New()
@@ -69,6 +71,7 @@ func main() {
 	wakeupAlertHandler := handler.WakeupHandler{DB: db}
 	cr.Start()
 	dbAccessor.ActivateAllCronWakeupAlerts()
+
 	e := echo.New()
 	e.GET("/", homeHandler.HandleHomeShow)
 	e.GET("/pi1", handler.HandlePI1)
@@ -77,5 +80,7 @@ func main() {
 	e.GET("/wakeup", wakeupAlertHandler.HandleWakeupAlert)
 	e.GET("/socket/wakeup", dbAccessor.Status)
 	e.POST("/wakeup/deactivate", dbAccessor.PublishDeactivateWakeup)
+	e.POST("/alarm/deactivate", alarmMqtt.PublishDeactivateAlarm)
+	e.GET("/socket/alarm", as.AlarmStatus)
 	e.Logger.Fatal(e.Start(":1323"))
 }
