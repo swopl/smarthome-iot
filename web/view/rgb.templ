@@ -1,0 +1,19 @@
+package view
+
+templ RGB() {
+    <fieldset class="container" style="width: 100%" hx-ext="ws" ws-connect="/socket/rgb">
+      <label for="r">
+        <input type="checkbox" id="r" name="r" role="switch"/>
+        R
+      </label>
+      <label for="g">
+        <input type="checkbox" id="g" name="g" role="switch"/>
+        G
+      </label>
+      <label for="b">
+        <input type="checkbox" id="b" name="b" role="switch"/>
+        B
+      </label>
+      <script id="rgb-editor"></script>
+    </fieldset>
+}

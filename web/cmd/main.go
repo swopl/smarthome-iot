@@ -75,6 +75,14 @@ func main() {
 	ds := AlarmState{Active: new(bool), Mutex: new(sync.Mutex)}
 	ds.subscribeToDoorSecuritySystem(client)
 
+	rgb := RGBState{
+		R:     "",
+		G:     "",
+		B:     "",
+		Mutex: new(sync.Mutex),
+	}
+	rgb.subscribeToRGB(client)
+
 	e := echo.New()
 	e.GET("/", homeHandler.HandleHomeShow)
 	e.GET("/pi1", handler.HandlePI1)
@@ -86,5 +94,7 @@ func main() {
 	e.POST("/alarm/deactivate", alarmMqtt.PublishDeactivateAlarm)
 	e.GET("/socket/alarm", as.AlarmStatus)
 	e.GET("/socket/door", ds.AlarmStatus)
+	e.GET("/socket/rgb", rgb.RGBStatus)
+	e.GET("/rgb", handler.HandleRGB)
 	e.Logger.Fatal(e.Start(":1323"))
 }
