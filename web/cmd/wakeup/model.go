@@ -68,8 +68,14 @@ func (dba *DBAccessor) NewWakeupAlert(c echo.Context) error {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 	dba.Cron.Stop() // FIXME: is this thread safe?
+	entries := dba.Cron.Entries()
+	for _, entry := range entries {
+		dba.Cron.Remove(entry.ID)
+		log.Printf("CronRemoved %d", entry.ID)
+	}
 	_, err := dba.Cron.AddFunc(waDto.Cron, dba.Mqtt.publishActivateWakeupAlert)
 	if err != nil {
+		dba.Cron.Start()
 		return c.String(http.StatusInternalServerError, fmt.Sprint(err))
 	}
 	tx, err := dba.DB.Begin()
