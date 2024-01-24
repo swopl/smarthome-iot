@@ -41,19 +41,10 @@ type DoorSecurityInfo struct {
 
 func (mqtt *MQTTAccessor) publishActivateWakeupAlert() {
 	log.Println("Activating wakeup")
-	mqtt.Client.Publish("DoorSecuritySystem", 2, true, DoorSecurityInfo{
+	mqtt.Client.Publish("WakeupAlert", 2, true, DoorSecurityInfo{
 		Time:   time.Now().UTC(),
 		RunsOn: "SERVER",
 		State:  "enabled",
-	})
-}
-
-func (mqtt *MQTTAccessor) publishDeactivateWakeupAlert() {
-	log.Println("Deactivating wakeup")
-	mqtt.Client.Publish("DoorSecuritySystem", 2, true, DoorSecurityInfo{
-		Time:   time.Now().UTC(),
-		RunsOn: "SERVER",
-		State:  "disabled",
 	})
 }
 

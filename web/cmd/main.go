@@ -70,5 +70,6 @@ func main() {
 	e.GET("/alarm", handler.HandleAlarm)
 	e.POST("/wakeup", dbAccessor.NewWakeupAlert)
 	e.GET("/wakeup", wakeupAlertHandler.HandleWakeupAlert)
+	e.GET("/socket/wakeup", dbAccessor.Status)
 	e.Logger.Fatal(e.Start(":1323"))
 }
