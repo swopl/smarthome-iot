@@ -76,3 +76,17 @@ func (dba *DBAccessor) NewWakeupAlert(c echo.Context) error {
 	}
 	return c.NoContent(http.StatusNoContent)
 }
+
+func (dba *DBAccessor) ActivateAllCronWakeupAlerts() {
+	var wakeupAlerts []WakeupAlert
+	err := dba.DB.Select(&wakeupAlerts, "SELECT * FROM wakeup_alert")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	for _, alert := range wakeupAlerts {
+		_, err := dba.Cron.AddFunc(alert.Cron, dba.Mqtt.publishActivateWakeupAlert)
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}
+}

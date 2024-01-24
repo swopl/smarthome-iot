@@ -60,6 +60,7 @@ func main() {
 		Mqtt: &MQTTAccessor{Client: client},
 	}
 	cr.Start()
+	dbAccessor.ActivateAllCronWakeupAlerts()
 	e.GET("/", homeHandler.HandleHomeShow)
 	e.GET("/pi1", handler.HandlePI1)
 	e.GET("/alarm", handler.HandleAlarm)
