@@ -12,6 +12,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"smarthome-back/cmd/wakeup"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -180,4 +181,30 @@ func (as *AlarmState) AlarmStatus(c echo.Context) error {
 		}
 	}).ServeHTTP(c.Response(), c.Request())
 	return nil
+}
+
+func (as *AlarmState) handleDoorSecuritySystemInfo(_ mqtt.Client, msg mqtt.Message) {
+	decoder := json.NewDecoder(bytes.NewReader(msg.Payload()))
+	var doorInfo wakeup.DoorSecurityInfo
+	err := decoder.Decode(&doorInfo)
+	if err != nil {
+		log.Fatalln(err) // TODO: maybe not fatal here
+	}
+	fmt.Print("Unmarshalled: ")
+	fmt.Println(doorInfo)
+	as.Mutex.Lock()
+	defer as.Mutex.Unlock()
+	*as.Active = doorInfo.State == "enabled"
+}
+
+func (as *AlarmState) subscribeToDoorSecuritySystem(client mqtt.Client) {
+	topics := []string{
+		"DoorSecuritySystem",
+	}
+	// TODO: check what qos means in subscribe
+	for _, topic := range topics {
+		if token := client.Subscribe(topic, 0, as.handleDoorSecuritySystemInfo); token.Wait() && token.Error() != nil {
+			log.Fatalln(token.Error())
+		}
+	}
 }

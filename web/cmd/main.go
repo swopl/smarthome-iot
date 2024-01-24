@@ -72,6 +72,9 @@ func main() {
 	cr.Start()
 	dbAccessor.ActivateAllCronWakeupAlerts()
 
+	ds := AlarmState{Active: new(bool), Mutex: new(sync.Mutex)}
+	ds.subscribeToDoorSecuritySystem(client)
+
 	e := echo.New()
 	e.GET("/", homeHandler.HandleHomeShow)
 	e.GET("/pi1", handler.HandlePI1)
@@ -82,5 +85,6 @@ func main() {
 	e.POST("/wakeup/deactivate", dbAccessor.PublishDeactivateWakeup)
 	e.POST("/alarm/deactivate", alarmMqtt.PublishDeactivateAlarm)
 	e.GET("/socket/alarm", as.AlarmStatus)
+	e.GET("/socket/door", ds.AlarmStatus)
 	e.Logger.Fatal(e.Start(":1323"))
 }
