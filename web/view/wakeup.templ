@@ -18,8 +18,8 @@ templ WakeupAlert(wakeupAlert wakeup.Alert) {
       </div>
       <button type="submit">Change</button>
     </form>
-    <section class="container">
+    <section class="container" hx-ext="ws" ws-connect="/socket/wakeup">
       <span>Wakeup Alert is: </span><span id="status">INACTIVE</span>
-      <button type="button" disabled>Deactivate</button>
+      <button type="button" disabled ws-send>Deactivate</button>
     </section>
 }

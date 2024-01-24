@@ -24,7 +24,7 @@ CREATE TABLE wakeup_alert (
 	enabled boolean
 );
 
-INSERT INTO wakeup_alert (name, cron, enabled) VALUES ('MyAlert', '*/5 * * * *', true);`
+INSERT INTO wakeup_alert (name, cron, enabled) VALUES ('MyAlert', '*/15 * * * *', true);`
 
 func main() {
 	err := godotenv.Load("./secret.env")
