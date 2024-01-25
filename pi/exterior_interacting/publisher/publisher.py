@@ -8,7 +8,7 @@ from datetime import datetime
 
 class Publisher:
     # TODO: flush all batches on shutdown
-    def __init__(self, type_name: str, publish_data_limit=8888888):
+    def __init__(self, type_name: str, publish_data_limit=8):
         self.publish_data_limit = publish_data_limit
         self.publish_data_counter = 0
         self.publish_batch = []
