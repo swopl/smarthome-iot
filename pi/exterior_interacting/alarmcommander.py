@@ -42,6 +42,7 @@ class AlarmCommander:
         self.wakeup_alert_active = False
         self.door_security_timer = None
         self.alarm_activated_by_btn = False
+        self.last_people_publish = datetime.now()
 
     def _on_mqtt_connect(self, client, userdata, flags, rc):
         self.mqtt_client.subscribe("AlarmInfo")  # TODO: think about qos and others
@@ -104,6 +105,9 @@ class AlarmCommander:
         }), 2, True)
 
     def _publish_people_change(self, incrementing):
+        if datetime.now() - self.last_people_publish < timedelta(seconds=15):
+            return
+        self.last_people_publish = datetime.now()
         self.mqtt_client.publish("PeopleDetection", json.dumps({
             "time": datetime.utcnow().isoformat() + "Z",
             "runs_on": "TODO",  # TODO: add runs_on
