@@ -1,4 +1,4 @@
- {
+{
   "annotations": {
     "list": [
       {
@@ -108,15 +108,6 @@
           },
           "query": "from(bucket: \"example_db\")\n|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n|> filter(fn: (r) => (r.codename == \"RDHT3\" or r.codename == \"GDHT\") and r._measurement == \"Humidity\")",
           "refId": "RDHT1"
-        },
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "ce8954ed-42b6-4553-806d-cae3668cd077"
-          },
-          "hide": false,
-          "query": "from(bucket: \"example_db\")\n|> range(start: -360m)\n|> filter(fn: (r) => r.codename == \"RDHT2\" and r._measurement == \"Humidity\")",
-          "refId": "RDHT2"
         }
       ],
       "title": "Humidity",
@@ -300,15 +291,6 @@
           },
           "query": "from(bucket: \"example_db\")\n|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n|> filter(fn: (r) => (r.codename == \"RDHT3\" or r.codename == \"GDHT\") and r._measurement == \"Temperature\")",
           "refId": "RDHT1"
-        },
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "ce8954ed-42b6-4553-806d-cae3668cd077"
-          },
-          "hide": false,
-          "query": "from(bucket: \"example_db\")\n|> range(start: -360m)\n|> filter(fn: (r) => r.codename == \"RDHT2\" and r._measurement == \"Temperature\")",
-          "refId": "RDHT2"
         }
       ],
       "title": "Temperature",
@@ -492,15 +474,6 @@
           },
           "query": "from(bucket: \"example_db\")\n|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n|> filter(fn: (r) => r.codename == \"GSG\" and (r._measurement == \"Rotation_x\" or r._measurement == \"Rotation_y\" or r._measurement == \"Rotation_z\"))",
           "refId": "RDHT1"
-        },
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "ce8954ed-42b6-4553-806d-cae3668cd077"
-          },
-          "hide": false,
-          "query": "from(bucket: \"example_db\")\n|> range(start: -360m)\n|> filter(fn: (r) => r.codename == \"RDHT2\" and r._measurement == \"Humidity\")",
-          "refId": "RDHT2"
         }
       ],
       "title": "Rotation of GSG",
@@ -592,15 +565,6 @@
           },
           "query": "from(bucket: \"example_db\")\n|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n|> filter(fn: (r) => r.codename == \"GSG\" and (r._measurement == \"Acceleration_x\" or r._measurement == \"Acceleration_y\" or r._measurement == \"Acceleration_z\"))",
           "refId": "RDHT1"
-        },
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "ce8954ed-42b6-4553-806d-cae3668cd077"
-          },
-          "hide": false,
-          "query": "from(bucket: \"example_db\")\n|> range(start: -360m)\n|> filter(fn: (r) => r.codename == \"RDHT2\" and r._measurement == \"Humidity\")",
-          "refId": "RDHT2"
         }
       ],
       "title": "Acceleration (g) of GSG",
@@ -653,7 +617,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -744,7 +709,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -789,20 +755,20 @@
       "type": "timeseries"
     }
   ],
-  "refresh": "",
+  "refresh": false,
   "schemaVersion": 38,
   "tags": [],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-6h",
-    "to": "now"
+    "from": "2024-01-25T03:08:55.803Z",
+    "to": "2024-01-25T03:18:54.893Z"
   },
   "timepicker": {},
   "timezone": "",
   "title": "PI2",
   "uid": "af3b4bc6-b7fe-444f-ae21-5e558e932572",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }
