@@ -2,15 +2,15 @@ package view
 
 templ RGB() {
     <fieldset class="container" style="width: 100%" hx-ext="ws" ws-connect="/socket/rgb">
-      <label for="r">
+      <label for="r" style="width: fit-content">
         <input type="checkbox" id="r" name="r" role="switch" hx-put="/rgb/r"/>
         R
       </label>
-      <label for="g">
+      <label for="g" style="width: fit-content">
         <input type="checkbox" id="g" name="g" role="switch" hx-put="/rgb/g"/>
         G
       </label>
-      <label for="b">
+      <label for="b" style="width: fit-content">
         <input type="checkbox" id="b" name="b" role="switch" hx-put="/rgb/b"/>
         B
       </label>
