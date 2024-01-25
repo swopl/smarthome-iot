@@ -55,7 +55,13 @@ func publishPeopleCount(client mqtt.Client, count int32) {
 		log.Println("Negative count for people somehow:", count)
 		count = 0
 	}
-	client.Publish("PeopleCount", 2, true, count)
+	var buf bytes.Buffer
+	encoder := json.NewEncoder(&buf)
+	err := encoder.Encode(count)
+	if err != nil {
+		log.Println("Error unmarshal pub Alarm:", err)
+	}
+	client.Publish("PeopleCount", 2, true, buf)
 }
 
 func subscribeToPeopleDetection(client mqtt.Client) {

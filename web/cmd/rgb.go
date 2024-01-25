@@ -142,6 +142,8 @@ func (rgb *RGBState) PublishNewColorB(c echo.Context) error {
 
 func (rgb *RGBState) publishColor() {
 	// TODO: take bool instead of string
+	var buf bytes.Buffer
+	encoder := json.NewEncoder(&buf)
 	output := 0
 	if rgb.R != "" {
 		output++
@@ -154,8 +156,12 @@ func (rgb *RGBState) publishColor() {
 	if rgb.B != "" {
 		output++
 	}
+	err := encoder.Encode(output)
+	if err != nil {
+		log.Println("Error unmarshal pub Alarm:", err)
+	}
 	log.Println("Color publishing:", output)
-	token := rgb.Client.Publish("RGBColor", 2, true, output)
+	token := rgb.Client.Publish("RGBColor", 2, true, buf)
 	if token.Wait() && token.Error() != nil {
 		log.Println("Error publishing WA:", token.Error())
 	}
