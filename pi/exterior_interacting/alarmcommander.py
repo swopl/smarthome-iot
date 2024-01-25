@@ -272,5 +272,5 @@ class AlarmCommander:
     def _buzz_bedroom(self):
         if not self.bedroom_abz_queue:
             return
-        buzz = {"pitch": 440, "duration": 1.0}
+        buzz = {"pitch": 4400, "duration": 1.0}
         self.bedroom_abz_queue.put(buzz)
