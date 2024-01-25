@@ -72,6 +72,7 @@ class CurseUIBuilder:
         component_settings["runs_on"] = f"PI{self.running_pi}"
         self.row_templates[key] = (int(component_settings["row"]),
                                    "{code:10} at {timestamp} | Button pushed in: {on_off}")
+        self.alarm_commander.has_ds = True
         return BTNComponent(self.display_queues[key], component_settings, self.stop_event,
                             self.publishers[component_settings["type"]], self.alarm_commander.btn_queue)
 

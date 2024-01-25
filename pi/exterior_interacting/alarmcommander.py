@@ -44,6 +44,7 @@ class AlarmCommander:
         self.alarm_activated_by_btn = False
         self.last_people_publish = datetime.now()
         self.runs_on = runs_on
+        self.has_ds = False
 
     def _on_mqtt_connect(self, client, userdata, flags, rc):
         self.mqtt_client.subscribe("AlarmInfo")  # TODO: think about qos and others
@@ -128,7 +129,8 @@ class AlarmCommander:
                 break
             time.sleep(1.1)
             self._check_mbr()
-            self._check_button()
+            if self.has_ds:
+                self._check_button()
             self._check_gyro()
             self._check_uds()
             self._check_dpir()
