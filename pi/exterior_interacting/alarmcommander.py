@@ -58,6 +58,8 @@ class AlarmCommander:
             if payload["state"] == "enabled":
                 logging.info("Alarm: ENABLED")
                 self.alarm_active = True
+                if payload["runs_on"] == self.runs_on and payload["reason"] == "DS":
+                    self.alarm_activated_by_btn = True
             elif payload["state"] == "disabled":
                 logging.info("Alarm: DISABLED")
                 self.alarm_active = False
@@ -92,7 +94,7 @@ class AlarmCommander:
     def _publish_alarm(self, reason, extra, state="enabled"):
         self.mqtt_client.publish("AlarmInfo", json.dumps({
             "time": datetime.utcnow().isoformat() + "Z",
-            "runs_on": "TODO",  # TODO: add runs_on
+            "runs_on": self.runs_on,
             "reason": reason,
             "extra": extra,
             "state": state
@@ -101,7 +103,7 @@ class AlarmCommander:
     def _publish_door_security(self, state="enabled"):
         self.mqtt_client.publish("DoorSecuritySystem", json.dumps({
             "time": datetime.utcnow().isoformat() + "Z",
-            "runs_on": "TODO",  # TODO: add runs_on
+            "runs_on": self.runs_on,
             "state": state
         }), 2, True)
 
@@ -111,7 +113,7 @@ class AlarmCommander:
         self.last_people_publish = datetime.now()
         self.mqtt_client.publish("PeopleDetection", json.dumps({
             "time": datetime.utcnow().isoformat() + "Z",
-            "runs_on": "TODO",  # TODO: add runs_on
+            "runs_on": self.runs_on,
             "incrementing": incrementing,
         }), 2, True)
 
