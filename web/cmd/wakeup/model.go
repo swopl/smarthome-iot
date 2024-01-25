@@ -40,9 +40,9 @@ type AlertDTO struct {
 
 type DoorSecurityInfo struct {
 	// TODO: rename, this is also for alert enable/disable
-	Time   time.Time
-	RunsOn string `json:"runs_on"` // TODO: do i need this json meta?
-	State  string
+	Time   time.Time `json:"time"`
+	RunsOn string    `json:"runs_on"` // TODO: do i need this json meta?
+	State  string    `json:"state"`
 }
 
 func (mqtt *MQTTAccessor) publishActivateWakeupAlert() {

@@ -19,9 +19,9 @@ import (
 )
 
 type PersonData struct {
-	Time         time.Time
-	RunsOn       string `json:"runs_on"` // TODO: do i need this json meta?
-	Incrementing bool
+	Time         time.Time `json:"time"`
+	RunsOn       string    `json:"runs_on"`
+	Incrementing bool      `json:"incrementing"`
 }
 
 type PersonCounter struct {
@@ -71,11 +71,11 @@ func subscribeToPeopleDetection(client mqtt.Client) {
 }
 
 type AlarmInfo struct {
-	Time   time.Time
-	RunsOn string `json:"runs_on"` // TODO: do i need this json meta?
-	Reason string
-	Extra  string
-	State  string
+	Time   time.Time `json:"time"`
+	RunsOn string    `json:"runs_on"` // TODO: do i need this json meta?
+	Reason string    `json:"reason"`
+	Extra  string    `json:"extra"`
+	State  string    `json:"state"`
 }
 
 type AlarmState struct {

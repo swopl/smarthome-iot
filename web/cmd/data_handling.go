@@ -13,12 +13,12 @@ import (
 )
 
 type DeviceData struct {
-	Simulated   bool
-	Time        time.Time
-	Measurement string
-	RunsOn      string `json:"runs_on"` // TODO: do i need this json meta?
-	Codename    string
-	Value       interface{}
+	Simulated   bool        `json:"simulated"`
+	Time        time.Time   `json:"time"`
+	Measurement string      `json:"measurement"`
+	RunsOn      string      `json:"runs_on"` // TODO: do i need this json meta?
+	Codename    string      `json:"codename"`
+	Value       interface{} `json:"value"`
 }
 
 func handleNewData(client mqtt.Client, msg mqtt.Message) {
