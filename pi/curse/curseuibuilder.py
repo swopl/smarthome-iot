@@ -1,3 +1,4 @@
+import logging
 import threading
 from queue import LifoQueue, Queue
 from exterior_interacting.alarmcommander import AlarmCommander
@@ -125,7 +126,8 @@ class CurseUIBuilder:
         self.rgb_colorizer.attach_rgb_command_queue(self.command_queues[key])
         self.row_templates[key] = (int(component_settings["row"]),
                                    "{code:10} at {timestamp} | RGB colors: {color}")
-        self.command_builder.add_rgb(key)
+        self.command_queues["_COLORIZER_RGB"] = self.rgb_colorizer.colorization_queue
+        self.command_builder.add_rgb("_COLORIZER_RGB")
         return RGBComponent(self.display_queues[key], component_settings, self.stop_event,
                             self.command_queues[key])
 

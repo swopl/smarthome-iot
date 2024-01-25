@@ -22,7 +22,7 @@ def _dialog_read_line(msg, stdscr, max_size=3) -> bytes:
 
 def _dialog_read_rgb_color(msg, stdscr):
     # TODO: handle bad input
-    return tuple(int(chr(num)) for num in _dialog_read_line(msg, stdscr))
+    return int(_dialog_read_line(msg, stdscr), base=2)
 
 
 def _dialog_read_mbr(msg, stdscr):

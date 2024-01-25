@@ -73,6 +73,7 @@ def main():
         logging.info(f"Success loading component: {key}")
 
     threads.append(ui_builder.alarm_commander.activate())
+    threads.append(ui_builder.rgb_colorizer.activate())
     ui, stop_event = ui_builder.build()
     try:
         ui.draw_loop()
