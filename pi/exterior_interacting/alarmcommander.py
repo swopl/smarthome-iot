@@ -14,7 +14,7 @@ def calculate_intensity(acceleration):
 
 
 class AlarmCommander:
-    def __init__(self, stop_event):
+    def __init__(self, stop_event, runs_on: str):
         self.stop_event = stop_event
         self.abz_queues = []
         self.bedroom_abz_queue = Queue()
@@ -25,7 +25,7 @@ class AlarmCommander:
         self.dpir_queue = Queue()
         self.rpir_queue = Queue()
         self.d47seg_blinking_queue = Queue()
-        self.btn_pushed_in = False
+        self.btn_pushed_in = False  # TODO: !! check if holding btn when starting glitches it
         self.when_btn_released = datetime.now()
         self.alarm_active = False
         self.door_security_active = False
@@ -43,6 +43,7 @@ class AlarmCommander:
         self.door_security_timer = None
         self.alarm_activated_by_btn = False
         self.last_people_publish = datetime.now()
+        self.runs_on = runs_on
 
     def _on_mqtt_connect(self, client, userdata, flags, rc):
         self.mqtt_client.subscribe("AlarmInfo")  # TODO: think about qos and others
@@ -206,17 +207,18 @@ class AlarmCommander:
         # FIXME: this expects only one button per pi, should work for our examples
         try:
             newly_pushed_in = self.btn_queue.get(timeout=0.03)
+            if self.btn_pushed_in and not newly_pushed_in:
+                self.btn_pushed_in = False
+                self.when_btn_released = datetime.now()
         except Empty:
-            return
-        if self.btn_pushed_in and not newly_pushed_in:
-            self.btn_pushed_in = False
-            self.when_btn_released = datetime.now()
+            newly_pushed_in = None
         if (not self.alarm_active and
                 not self.btn_pushed_in and datetime.now() - self.when_btn_released >= timedelta(seconds=5)):
             logging.info("Alarm activating due to DS...")
             self.alarm_activated_by_btn = True
             self._publish_alarm("DS", "Door sensor released for longer than 5 seconds")
-        self.btn_pushed_in = newly_pushed_in
+        if newly_pushed_in is not None:
+            self.btn_pushed_in = newly_pushed_in
         if self.alarm_activated_by_btn and self.alarm_active and self.btn_pushed_in:
             self.alarm_activated_by_btn = False
             self._publish_alarm("AfterDS", "Door sensor pushed in after alarm caused by DS",

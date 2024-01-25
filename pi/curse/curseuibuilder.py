@@ -29,7 +29,7 @@ class CurseUIBuilder:
         self.stop_event = threading.Event()
         self.publishers = PublisherDict()
         self.running_pi = running_pi
-        self.alarm_commander = AlarmCommander(self.stop_event)
+        self.alarm_commander = AlarmCommander(self.stop_event, f"PI{self.running_pi}")
         self.rgb_colorizer = RGBColorizer(self.stop_event)
 
     def build(self):
