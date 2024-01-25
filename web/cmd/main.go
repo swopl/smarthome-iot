@@ -96,7 +96,7 @@ func main() {
 	e.POST("/wakeup/deactivate", dbAccessor.PublishDeactivateWakeup)
 	e.POST("/alarm/deactivate", alarmMqtt.PublishDeactivateAlarm)
 	e.GET("/socket/alarm", as.AlarmStatus)
-	e.GET("/socket/door", ds.AlarmStatus)
+	e.GET("/socket/door", ds.DoorStatus)
 	e.GET("/socket/rgb", rgb.RGBStatus)
 	e.GET("/rgb", handler.HandleRGB)
 	e.PUT("/rgb/r", rgb.PublishNewColorR)

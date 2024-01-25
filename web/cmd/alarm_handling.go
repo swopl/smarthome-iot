@@ -178,7 +178,29 @@ func (as *AlarmState) AlarmStatus(c echo.Context) error {
 			}
 			as.Mutex.Unlock()
 			err := websocket.Message.Send(ws, fmt.Sprintf(
-				"<span id=\"status\" hx-swap-oob=\"outerHTML\">%s</span>", text))
+				"<span id=\"status-alarm\" hx-swap-oob=\"outerHTML\">%s</span>", text))
+			if err != nil {
+				c.Logger().Error(err)
+				return
+			}
+			time.Sleep(5 * time.Second) // TODO: do it better instead of sending every second
+		}
+	}).ServeHTTP(c.Response(), c.Request())
+	return nil
+}
+
+func (as *AlarmState) DoorStatus(c echo.Context) error {
+	websocket.Handler(func(ws *websocket.Conn) {
+		defer ws.Close() // TODO: safe to defer when used in goroutine?
+		for {
+			as.Mutex.Lock()
+			text := "INACTIVE"
+			if *as.Active {
+				text = "ACTIVE"
+			}
+			as.Mutex.Unlock()
+			err := websocket.Message.Send(ws, fmt.Sprintf(
+				"<span id=\"status-door\" hx-swap-oob=\"outerHTML\">%s</span>", text))
 			if err != nil {
 				c.Logger().Error(err)
 				return

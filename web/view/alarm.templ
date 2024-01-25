@@ -4,11 +4,11 @@ templ Alarm() {
     <div class="grid" style="height: 100%">
         <section>
             <section class="container" hx-ext="ws" ws-connect="/socket/alarm">
-                <span>Alarm is: </span><span id="status">INACTIVE</span>
+                <span>Alarm is: </span><span id="status-alarm">INACTIVE</span>
                 <button type="button" hx-post="/alarm/deactivate" hx-swap="none">Deactivate alarm</button>
             </section>
             <section class="container" hx-ext="ws" ws-connect="/socket/door">
-                <span>Door security is: </span><span id="status">INACTIVE</span>
+                <span>Door security is: </span><span id="status-door">INACTIVE</span>
             </section>
         </section>
         <iframe src="http://localhost:3000/d-solo/c360f3ec-04d4-45c6-b0c7-2f5a1fa7c710/alarms?orgId=1&panelId=1" width="100%" height="100%" frameborder="0"></iframe>
