@@ -76,10 +76,11 @@ func main() {
 	ds.subscribeToDoorSecuritySystem(client)
 
 	rgb := RGBState{
-		R:     "",
-		G:     "",
-		B:     "",
-		Mutex: new(sync.Mutex),
+		R:      "",
+		G:      "",
+		B:      "",
+		Mutex:  new(sync.Mutex),
+		Client: client,
 	}
 	rgb.subscribeToRGB(client)
 
@@ -96,5 +97,8 @@ func main() {
 	e.GET("/socket/door", ds.AlarmStatus)
 	e.GET("/socket/rgb", rgb.RGBStatus)
 	e.GET("/rgb", handler.HandleRGB)
+	e.PUT("/rgb/r", rgb.PublishNewColorR)
+	e.PUT("/rgb/g", rgb.PublishNewColorG)
+	e.PUT("/rgb/b", rgb.PublishNewColorB)
 	e.Logger.Fatal(e.Start(":1323"))
 }

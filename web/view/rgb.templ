@@ -3,15 +3,15 @@ package view
 templ RGB() {
     <fieldset class="container" style="width: 100%" hx-ext="ws" ws-connect="/socket/rgb">
       <label for="r">
-        <input type="checkbox" id="r" name="r" role="switch"/>
+        <input type="checkbox" id="r" name="r" role="switch" hx-put="/rgb/r"/>
         R
       </label>
       <label for="g">
-        <input type="checkbox" id="g" name="g" role="switch"/>
+        <input type="checkbox" id="g" name="g" role="switch" hx-put="/rgb/g"/>
         G
       </label>
       <label for="b">
-        <input type="checkbox" id="b" name="b" role="switch"/>
+        <input type="checkbox" id="b" name="b" role="switch" hx-put="/rgb/b"/>
         B
       </label>
       <script id="rgb-editor"></script>

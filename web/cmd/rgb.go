@@ -8,15 +8,17 @@ import (
 	"github.com/labstack/echo/v4"
 	"golang.org/x/net/websocket"
 	"log"
+	"net/http"
 	"sync"
 	"time"
 )
 
 type RGBState struct {
-	R     string
-	G     string
-	B     string
-	Mutex *sync.Mutex
+	R      string
+	G      string
+	B      string
+	Mutex  *sync.Mutex
+	Client mqtt.Client
 }
 
 func (rgb *RGBState) RGBStatus(c echo.Context) error {
@@ -75,5 +77,86 @@ func (rgb *RGBState) subscribeToRGB(client mqtt.Client) {
 		if token := client.Subscribe(topic, 0, rgb.handleRGBInfo); token.Wait() && token.Error() != nil {
 			log.Fatalln(token.Error())
 		}
+	}
+}
+
+type RGBDto struct {
+	R string `form:"r"`
+	G string `form:"g"`
+	B string `form:"b"`
+}
+
+func (rgb *RGBState) PublishNewColorR(c echo.Context) error {
+	fmt.Println("PUBLISH COLOR")
+	rgbDto := new(RGBDto)
+	if err := c.Bind(rgbDto); err != nil {
+		// TODO: don't send error to client
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	rgb.Mutex.Lock()
+	if rgbDto.R != "" {
+		rgb.R = "checked"
+	} else {
+		rgb.R = ""
+	}
+	rgb.Mutex.Unlock()
+	rgb.publishColor()
+	return c.NoContent(http.StatusOK)
+}
+
+func (rgb *RGBState) PublishNewColorG(c echo.Context) error {
+	fmt.Println("PUBLISH COLOR")
+	rgbDto := new(RGBDto)
+	if err := c.Bind(rgbDto); err != nil {
+		// TODO: don't send error to client
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	rgb.Mutex.Lock()
+	if rgbDto.G != "" {
+		rgb.G = "checked"
+	} else {
+		rgb.G = ""
+	}
+	rgb.Mutex.Unlock()
+	rgb.publishColor()
+	return c.NoContent(http.StatusOK)
+}
+
+func (rgb *RGBState) PublishNewColorB(c echo.Context) error {
+	fmt.Println("PUBLISH COLOR")
+	rgbDto := new(RGBDto)
+	if err := c.Bind(rgbDto); err != nil {
+		// TODO: don't send error to client
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	rgb.Mutex.Lock()
+	if rgbDto.B != "" {
+		rgb.B = "checked"
+	} else {
+		rgb.B = ""
+	}
+	rgb.Mutex.Unlock()
+	rgb.publishColor()
+	return c.NoContent(http.StatusOK)
+}
+
+func (rgb *RGBState) publishColor() {
+	// TODO: take bool instead of string
+	output := 0
+	if rgb.R != "" {
+		output++
+	}
+	output <<= 1
+	if rgb.G != "" {
+		output++
+	}
+	output <<= 1
+	if rgb.B != "" {
+		output++
+	}
+	log.Println("Color publishing:", output)
+	token := rgb.Client.Publish("RGBColor", 2, true, output)
+	if token.Wait() && token.Error() != nil {
+		log.Println("Error publishing WA:", token.Error())
 	}
 }
