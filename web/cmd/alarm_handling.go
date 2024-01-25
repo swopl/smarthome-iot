@@ -168,6 +168,7 @@ func publishDeactivateAlarm(client mqtt.Client) {
 }
 
 func (as *AlarmState) AlarmStatus(c echo.Context) error {
+	// FIXME: websockets multiplying, not invalid state, but mem wasting. Because not reading EOF
 	websocket.Handler(func(ws *websocket.Conn) {
 		defer ws.Close() // TODO: safe to defer when used in goroutine?
 		for {
