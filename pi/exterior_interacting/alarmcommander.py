@@ -8,6 +8,8 @@ import paho.mqtt.client as mqtt
 from datetime import datetime, timedelta
 from queue import Queue, Empty
 
+from broker_settings import HOSTNAME
+
 
 def calculate_intensity(acceleration):
     return math.sqrt(acceleration[0] ** 2 + acceleration[1] ** 2 + acceleration[2] ** 2)
@@ -35,7 +37,7 @@ class AlarmCommander:
         self.mqtt_client = mqtt.Client()
         self.mqtt_client.on_connect = self._on_mqtt_connect
         self.mqtt_client.on_message = self._process_message
-        self.mqtt_client.connect("localhost", 1883, 60)  # TODO: extract host to file
+        self.mqtt_client.connect(HOSTNAME, 1883, 60)
         self.mqtt_client.loop_start()
         self.gyro_intensities = []
         self.uds_distances = []

@@ -5,6 +5,8 @@ from queue import Queue, Empty
 
 import paho.mqtt.client as mqtt
 
+from broker_settings import HOSTNAME
+
 
 class RGBColorizer:
     def __init__(self, stop_event, on_color=(1, 1, 1)):
@@ -12,7 +14,7 @@ class RGBColorizer:
         self.mqtt_client = mqtt.Client()
         self.mqtt_client.on_connect = self._on_mqtt_connect
         self.mqtt_client.on_message = self._process_message
-        self.mqtt_client.connect("localhost", 1883, 60)  # TODO: extract host to file
+        self.mqtt_client.connect(HOSTNAME, 1883, 60)
         self.mqtt_client.loop_start()
         self.on_color = on_color
         self.stop_event = stop_event
