@@ -27,7 +27,15 @@ class RGBColorizer:
     def _process_message(self, client, userdata, message):
         payload = json.loads(message.payload.decode("utf-8"))
         logging.debug(f"RGBColorizer received color: {payload}")
-        self.colorization_queue.put(int(payload))
+        self._color_me(int(payload))
+
+    def _color_me(self, color_number: int):
+        colors = self.decode_color(color_number)
+        if self.rgb_command_queue:
+            self.rgb_command_queue.put(colors)
+
+    def _publish_color(self, color_num: int):
+        self.mqtt_client.publish("RGBColor", color_num, 2, True)
 
     def activate(self) -> threading.Thread:
         colorizer_thread = threading.Thread(target=self._loop, args=())
@@ -46,6 +54,4 @@ class RGBColorizer:
                 color_number = self.colorization_queue.get(timeout=0.5)
             except Empty:
                 return
-            colors = self.decode_color(color_number)
-            if self.rgb_command_queue:
-                self.rgb_command_queue.put(colors)
+            self._publish_color(color_number)
