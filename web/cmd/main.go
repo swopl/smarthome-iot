@@ -87,6 +87,8 @@ func main() {
 	e := echo.New()
 	e.GET("/", homeHandler.HandleHomeShow)
 	e.GET("/pi1", handler.HandlePI1)
+	e.GET("/pi2", handler.HandlePI2)
+	e.GET("/pi3", handler.HandlePI3)
 	e.GET("/alarm", handler.HandleAlarm)
 	e.POST("/wakeup", dbAccessor.NewWakeupAlert)
 	e.GET("/wakeup", wakeupAlertHandler.HandleWakeupAlert)
