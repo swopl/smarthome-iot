@@ -41,6 +41,7 @@ class AlarmCommander:
         self.uds_distances = []
         self.wakeup_alert_active = False
         self.door_security_timer = None
+        self.alarm_activated_by_btn = False
 
     def _on_mqtt_connect(self, client, userdata, flags, rc):
         self.mqtt_client.subscribe("AlarmInfo")  # TODO: think about qos and others
@@ -209,8 +210,13 @@ class AlarmCommander:
         if (not self.alarm_active and
                 not self.btn_pushed_in and datetime.now() - self.when_btn_released >= timedelta(seconds=5)):
             logging.info("Alarm activating due to DS...")
+            self.alarm_activated_by_btn = True
             self._publish_alarm("DS", "Door sensor released for longer than 5 seconds")
         self.btn_pushed_in = newly_pushed_in
+        if self.alarm_activated_by_btn and self.alarm_active and self.btn_pushed_in:
+            self.alarm_activated_by_btn = False
+            self._publish_alarm("AfterDS", "Door sensor pushed in after alarm caused by DS",
+                                "disabled")
 
     def _check_button_high_alert(self):
         # FIXME: this expects only one button per pi, should work for our examples
