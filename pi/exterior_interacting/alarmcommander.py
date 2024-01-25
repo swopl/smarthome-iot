@@ -33,10 +33,10 @@ class AlarmCommander:
         self.alarm_password = "5678"
         self.person_count = -1
         self.mqtt_client = mqtt.Client()
-        self.mqtt_client.connect("localhost", 1883, 60)  # TODO: extract host to file
-        self.mqtt_client.loop_start()
         self.mqtt_client.on_connect = self._on_mqtt_connect
         self.mqtt_client.on_message = self._process_message
+        self.mqtt_client.connect("localhost", 1883, 60)  # TODO: extract host to file
+        self.mqtt_client.loop_start()
         self.gyro_intensities = []
         self.uds_distances = []
         self.wakeup_alert_active = False

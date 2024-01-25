@@ -10,10 +10,10 @@ class RGBColorizer:
     def __init__(self, stop_event, on_color=(1, 1, 1)):
         self.colorization_queue = Queue()
         self.mqtt_client = mqtt.Client()
-        self.mqtt_client.connect("localhost", 1883, 60)  # TODO: extract host to file
-        self.mqtt_client.loop_start()
         self.mqtt_client.on_connect = self._on_mqtt_connect
         self.mqtt_client.on_message = self._process_message
+        self.mqtt_client.connect("localhost", 1883, 60)  # TODO: extract host to file
+        self.mqtt_client.loop_start()
         self.on_color = on_color
         self.stop_event = stop_event
         self.rgb_command_queue = None
