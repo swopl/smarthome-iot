@@ -22,8 +22,6 @@ templ Base() {
         <body style="height: 100%; display: flex; flex-flow: column">
             @navbar.Navbar()
             <main class="container-fluid" style="flex-grow: 1">
-                <button type="button" onclick="history.back()">Go back whence you came</button>
-                <h1>Hello, World!</h1>
                 { children... }
             </main>
         </body>
