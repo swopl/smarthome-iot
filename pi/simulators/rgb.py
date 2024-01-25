@@ -9,7 +9,7 @@ class RGBSimulated:
         self.callback = callback
 
     def _setup(self):
-        self.callback((0, 0, 0), self.code)
+        pass
 
     def run(self):
         self._setup()

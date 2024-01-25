@@ -23,7 +23,6 @@ class RGB:
         GPIO.output(self.pin_r, GPIO.LOW)
         GPIO.output(self.pin_g, GPIO.LOW)
         GPIO.output(self.pin_b, GPIO.LOW)
-        self.callback((0, 0, 0), self.code)
 
     def run(self):
         logging.debug(f"Thread {threading.get_ident()} running {self.code}")
