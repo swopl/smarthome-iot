@@ -21,15 +21,35 @@ class GyroComponent(Component):
         self.display_queue.put({"timestamp": t, "code": code,
                                 "acceleration": str(tuple(round(num, 3) for num in acceleration)),
                                 "rotation": str(tuple(round(num, 2) for num in rotation))})
-        acceleration_payload = {
-            "measurement": "Acceleration",
-            "value": list(acceleration)
-        }
-        rotation_payload = {
-            "measurement": "Rotation",
-            "value": list(rotation)
-        }
-        self.publisher.add_to_batch([acceleration_payload, rotation_payload],
+        acceleration_payload = [
+            {
+                "measurement": "Acceleration_x",
+                "value": acceleration[0]
+            },
+            {
+                "measurement": "Acceleration_y",
+                "value": acceleration[1]
+            },
+            {
+                "measurement": "Acceleration_z",
+                "value": acceleration[2]
+            },
+        ]
+        rotation_payload = [
+            {
+                "measurement": "Rotation_x",
+                "value": rotation[0]
+            },
+            {
+                "measurement": "Rotation_y",
+                "value": rotation[1]
+            },
+            {
+                "measurement": "Rotation_z",
+                "value": rotation[2]
+            },
+        ]
+        self.publisher.add_to_batch(acceleration_payload + rotation_payload,
                                     ["Acceleration", "Rotation"], self.settings)
 
     def _run_real(self):
