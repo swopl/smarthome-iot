@@ -50,7 +50,8 @@ class GyroComponent(Component):
             },
         ]
         self.publisher.add_to_batch(acceleration_payload + rotation_payload,
-                                    ["Acceleration", "Rotation"], self.settings)
+                                    ["Acceleration"] * len(acceleration_payload) +
+                                    ["Rotation"] * len(rotation_payload), self.settings)
 
     def _run_real(self):
         from sensors.gyro.gyro import run_gyro_loop, Gyro
